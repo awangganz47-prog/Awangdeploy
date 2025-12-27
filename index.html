@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AwangXoffc ID - Script Bot Free</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Plus+Jakarta+Sans:wght@300;400;600;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg-dark: #050a15; --card-bg: #111a2e; --accent: #3b82f6; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: var(--bg-dark); color: white; margin: 0; overflow-x: hidden; display: flex; justify-content: center; user-select: none; }
+        #loader-wrapper { position: fixed; inset: 0; background: #050a15; z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; transition: opacity 0.8s ease, visibility 0.8s; }
+        .loader-logo { width: 80px; height: 80px; margin-bottom: 20px; animation: pulse-glow 2s infinite; }
+        @keyframes pulse-glow { 0%, 100% { transform: scale(1); opacity: 0.8; filter: drop-shadow(0 0 10px #3b82f6); } 50% { transform: scale(1.1); opacity: 1; filter: drop-shadow(0 0 25px #3b82f6); } }
+        .loader-bar-container { width: 200px; height: 4px; background: rgba(255,255,255,0.05); border-radius: 10px; overflow: hidden; }
+        #loader-bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #3b82f6, #00d2ff); transition: width 0.3s ease; }
+        .main-bg-fixed { position: fixed; inset: 0; background-size: cover; background-position: center; z-index: -2; }
+        .main-bg-overlay { position: fixed; inset: 0; background: radial-gradient(circle at top, rgba(59, 130, 246, 0.15), transparent), linear-gradient(to bottom, rgba(5, 10, 21, 0.6), rgba(5, 10, 21, 0.98)); backdrop-filter: blur(3px); z-index: -1; }
+        .app-container { width: 100%; max-width: 500px; min-height: 100vh; position: relative; }
+        .pixel-font { font-family: 'Press Start 2P', cursive; }
+        .glass-card { background: rgba(17, 26, 46, 0.6); backdrop-filter: blur(20px); border: 1px solid rgba(59, 130, 246, 0.2); }
+        
+        /* SIDEBAR STYLING IMPROVED */
+        #sidebar { height: 100vh; width: 300px; position: fixed; left: -300px; top: 0; background: #080f1e; z-index: 1000; transition: 0.5s cubic-bezier(0.4, 0, 0.2, 1); border-right: 1px solid rgba(59, 130, 246, 0.3); box-shadow: 10px 0 30px rgba(0,0,0,0.5); }
+        #sidebar.active { left: 0; }
+        .sidebar-category-header { margin: 24px 20px 10px; padding: 6px 12px; background: rgba(59, 130, 246, 0.05); border-left: 3px solid #3b82f6; border-radius: 4px; }
+        .sidebar-item { margin: 4px 16px; border-radius: 14px; transition: 0.3s; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); }
+        .sidebar-item:hover { background: rgba(59, 130, 246, 0.1); border-color: rgba(59, 130, 246, 0.3); transform: translateX(8px); }
+        
+        .overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 900; backdrop-filter: blur(8px); }
+        .overlay.active { display: block; }
+        .terminal-window { background: #010101; border-radius: 8px; border: 1px solid #1a1a1a; overflow: hidden; margin-top: 25px; box-shadow: 0 15px 40px rgba(0,0,0,0.8); font-family: 'Fira Code', monospace; }
+        .terminal-header { background: #0a0a0a; padding: 8px 12px; display: flex; align-items: center; border-bottom: 1px solid #1a1a1a; }
+        .terminal-body { padding: 0; font-size: 11px; height: 150px; overflow-y: auto; scrollbar-width: thin; scrollbar-color: #333 transparent; }
+        .term-table { width: 100%; border-collapse: collapse; }
+        .term-row { border-bottom: 1px solid rgba(255,255,255,0.02); }
+        .term-num { width: 35px; text-align: right; padding: 2px 8px; color: #555; border-right: 1px solid #1a1a1a; background: #050505; user-select: none; }
+        .term-code { padding: 2px 10px; white-space: pre; }
+        
+        /* STATS DECORATION */
+        .stat-box { position: relative; overflow: hidden; }
+        .stat-box::before { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 2px; border-radius: 10px; }
+        .stat-blue::before { background: #3b82f6; box-shadow: 0 0 10px #3b82f6; }
+        .stat-pink::before { background: #ec4899; box-shadow: 0 0 10px #ec4899; }
+        .stat-yellow::before { background: #eab308; box-shadow: 0 0 10px #eab308; }
+
+        #commentList { display: flex; flex-direction: column; gap: 0; }
+        .comment-wrapper { border-bottom: 1px solid rgba(255,255,255,0.05); padding: 24px 0; position: relative; }
+        .comment-main { display: flex; gap: 14px; }
+        
+        .avatar-container { position: relative; flex-shrink: 0; width: 52px; height: 52px; }
+        .avatar-img { width: 52px; height: 52px; border-radius: 50%; border: 2px solid rgba(59, 130, 246, 0.4); object-fit: cover; background: linear-gradient(45deg, #1e293b, #3b82f6); padding: 2px; }
+        .admin-love-badge { position: absolute; bottom: -2px; right: -2px; width: 22px; height: 22px; background: #ef4444; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid #050a15; z-index: 10; box-shadow: 0 0 10px rgba(239, 68, 68, 0.5); }
+        .admin-love-badge i { color: white; font-size: 10px; animation: heartBeat 1.2s infinite ease-in-out; }
+        @keyframes heartBeat { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.2); } }
+        
+        .reply-section { margin-left: 58px; margin-top: 16px; display: flex; flex-direction: column; gap: 14px; border-left: 2px solid rgba(59, 130, 246, 0.15); padding-left: 18px; position: relative; }
+        .reply-item::before { content: ''; position: absolute; left: -18px; top: 20px; width: 12px; height: 2px; background: rgba(59, 130, 246, 0.15); }
+        .eng-btn { transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1); }
+        .eng-btn:active { transform: scale(0.85); }
+        .star-active { color: #fbbf24; text-shadow: 0 0 8px rgba(251,191,36,0.4); }
+        .star-inactive { color: #1e293b; }
+        .rating-bar-bg { background: rgba(255,255,255,0.05); height: 6px; border-radius: 10px; flex: 1; overflow: hidden; }
+        .rating-bar-fill { height: 100%; background: linear-gradient(90deg, #3b82f6, #00d2ff); border-radius: 10px; transition: width 1s ease-in-out; }
+        .populer-card { min-width: 280px; background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(13, 20, 37, 0.98)); border: 1px solid rgba(59, 130, 246, 0.4); border-radius: 25px; padding: 22px; position: relative; overflow: hidden; snap-align: center; box-shadow: 0 10px 30px rgba(0,0,0,0.3); }
+        .f-modal { position: fixed; inset: 0; background: rgba(5,10,21,0.98); z-index: 3000; display: none; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(15px); }
+        .f-modal.active { display: flex; }
+        .f-modal-content { background: #0d1425; border: 1px solid #3b82f6; width: 100%; max-width: 400px; border-radius: 35px; padding: 30px; position: relative; }
+        .scroll-dots { display: flex; justify-content: center; gap: 8px; margin-top: 20px; }
+        .dot-item { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.1); transition: 0.4s; }
+        .dot-item.active { width: 24px; border-radius: 10px; background: #3b82f6; }
+        .section-header { position: relative; display: inline-block; padding-bottom: 5px; }
+        .section-header::after { content: ''; position: absolute; bottom: 0; left: 0; width: 40px; height: 3px; background: #3b82f6; border-radius: 10px; }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .empty-state { text-align: center; padding: 60px 20px; background: rgba(255,255,255,0.02); border-radius: 30px; border: 1px dashed rgba(59, 130, 246, 0.2); margin: 20px 0; width: 100%; animation: fadeIn 0.5s ease; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .dev-badge { background: linear-gradient(90deg, #3b82f6, #60a5fa); color: white; padding: 2px 8px; border-radius: 6px; font-size: 8px; font-weight: 900; text-transform: uppercase; margin-left: 5px; box-shadow: 0 0 10px rgba(59,130,246,0.5); }
+
+        .timestamp-text { color: #60a5fa; text-shadow: 0 0 5px rgba(96, 165, 250, 0.3); } 
+        .comment-menu-container { position: absolute; right: 0; top: 20px; }
+        
+        /* MENU DOT POSITIONING FOR REPLY */
+        .reply-menu-pos { position: absolute; right: -10px; top: 10px; }
+
+        .dot-menu-btn { width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; color: #3b82f6; cursor: pointer; border-radius: 50%; transition: 0.2s; background: rgba(59, 130, 246, 0.1); }
+        .dot-menu-btn:hover { background: rgba(59, 130, 246, 0.2); color: white; }
+        
+        .dropdown-menu { position: absolute; right: 0; top: 100%; background: #0d1425; border: 1px solid rgba(59, 130, 246, 0.4); border-radius: 16px; min-width: 160px; z-index: 100; display: none; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.9); backdrop-filter: blur(10px); }
+        .dropdown-menu.active { display: block; animation: menuFade 0.25s cubic-bezier(0.18, 0.89, 0.32, 1.28); }
+        @keyframes menuFade { from { opacity: 0; transform: scale(0.9) translateY(-10px); } to { opacity: 1; transform: scale(1) translateY(0); } }
+        .dropdown-item { padding: 12px 16px; font-size: 10px; font-weight: 800; text-transform: uppercase; color: #9ca3af; display: flex; align-items: center; gap: 12px; cursor: pointer; transition: 0.2s; border-bottom: 1px solid rgba(255,255,255,0.03); }
+        .dropdown-item:last-child { border: none; }
+        .dropdown-item:hover { background: rgba(59, 130, 246, 0.15); color: white; }
+        .dropdown-item i { width: 14px; text-align: center; font-size: 12px; }
+        .dropdown-item.danger { color: #ef4444; }
+        .dropdown-item.danger:hover { background: rgba(239, 68, 68, 0.15); }
+    </style>
+</head>
+<body oncontextmenu="return false;">
+
+    <audio id="sound-pop" src="https://assets.mixkit.co/active_storage/sfx/2358/2358-preview.mp3"></audio>
+    <audio id="sound-success" src="https://assets.mixkit.co/active_storage/sfx/2019/2019-preview.mp3"></audio>
+
+    <div id="loader-wrapper">
+        <div class="loader-logo">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 17L12 22L22 17" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 12L12 17L22 12" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </div>
+        <div class="loader-bar-container"><div id="loader-bar-fill"></div></div>
+    </div>
+
+    <div id="customBg" class="main-bg-fixed"></div>
+    <div class="main-bg-overlay"></div>
+    <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+
+    <div class="app-container">
+        <aside id="sidebar">
+            <div class="p-8 border-b border-white/5 flex flex-col items-center">
+                <div class="relative">
+                    <img src="" id="sidebarAvatar" class="w-20 h-20 rounded-full border-2 border-blue-500 p-1 object-cover">
+                    <div class="absolute inset-0 rounded-full border border-blue-500/50 animate-ping opacity-20"></div>
+                </div>
+                <span class="pixel-font text-[10px] text-blue-400 mt-4 uppercase">Command Center</span>
+            </div>
+            <div id="sidebarContent" class="py-6 overflow-y-auto h-[calc(100vh-180px)]"></div>
+        </aside>
+
+        <main class="pb-10">
+            <nav class="p-6 flex justify-between items-center sticky top-0 bg-[#050a15]/60 backdrop-blur-lg z-50">
+                <button onclick="toggleMenu(); playSfx('pop')" class="w-10 h-10 flex items-center justify-center bg-blue-600/10 rounded-xl text-blue-400 border border-blue-500/20"><i class="fas fa-bars-staggered"></i></button>
+                <div class="glass-card px-5 py-2 rounded-full border border-blue-500/40">
+                    <div id="navBrand" class="text-blue-400 text-[11px] font-black uppercase tracking-widest">AWANG OFFICIAL</div>
+                </div>
+            </nav>
+
+            <div class="text-center px-6 mt-4">
+                <div class="flex justify-center mb-6">
+                    <div class="relative">
+                        <img id="mainAvatar" src="" class="w-32 h-32 rounded-full border-4 border-[#050a15] object-cover ring-2 ring-blue-500/50">
+                        <div class="absolute bottom-2 right-2 bg-green-500 w-5 h-5 rounded-full border-4 border-[#050a15] animate-pulse"></div>
+                    </div>
+                </div>
+                <h1 class="pixel-font text-lg text-white mb-2" id="webTitle">&nbsp;</h1>
+                <p class="text-gray-400 text-xs px-4 mb-8" id="webSlogan"></p>
+
+                <div class="grid grid-cols-4 gap-2 mb-8">
+                    <div class="bg-white/5 p-3 rounded-2xl border border-white/5 stat-box stat-blue"><div id="statUsers" class="text-blue-400 font-bold">0</div><div class="text-[8px] text-gray-500 uppercase font-black">Visits</div></div>
+                    <div class="bg-white/5 p-3 rounded-2xl border border-white/5 stat-box stat-blue"><div id="statScripts" class="text-blue-400 font-bold">0</div><div class="text-[8px] text-gray-500 uppercase font-black">Scripts</div></div>
+                    <div class="bg-white/5 p-3 rounded-2xl border border-white/5 stat-box stat-pink"><div id="statLikes" class="text-pink-500 font-bold">0</div><div class="text-[8px] text-gray-500 uppercase font-black">Ulasan Likes</div></div>
+                    <div class="bg-white/5 p-3 rounded-2xl border border-white/5 stat-box stat-yellow"><div id="statRating" class="text-yellow-400 font-bold">0.0</div><div class="text-[8px] text-gray-500 uppercase font-black">Rating</div></div>
+                </div>
+
+                <div class="px-2">
+                    <a id="buyPanelBtn" href="#" onclick="playSfx('pop')" class="block bg-gradient-to-r from-blue-700 to-blue-500 p-4 rounded-2xl font-black text-xs uppercase tracking-widest shadow-lg shadow-blue-600/30 active:scale-95 transition-all"><i class="fas fa-rocket mr-2"></i> SALURAN INFORMATION</a>
+                    <div class="flex justify-center gap-4 mt-8" id="socialBox"></div>
+
+                    <div class="terminal-window text-left">
+                        <div class="terminal-header">
+                            <div class="flex gap-1.5 mr-4"><div class="w-2.5 h-2.5 rounded-full bg-[#ff5f56]"></div><div class="w-2.5 h-2.5 rounded-full bg-[#ffbd2e]"></div><div class="w-2.5 h-2.5 rounded-full bg-[#27c93f]"></div></div>
+                            <span class="text-[9px] text-gray-500 font-mono">awang@shell:~</span>
+                        </div>
+                        <div class="terminal-body" id="terminalContent">
+                            <table class="term-table" id="terminalLines"></table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-16 px-6">
+                <h2 class="pixel-font text-[10px] text-blue-400 section-header uppercase mb-6">Free Scripts</h2>
+                <div class="relative mb-6">
+                    <i class="fas fa-search absolute left-4 top-1/2 -translate-y-1/2 text-blue-500"></i>
+                    <input type="text" id="scriptSearch" class="w-full bg-[#111a2e] border border-blue-500/30 rounded-2xl py-4 pl-12 pr-4 text-sm outline-none focus:border-blue-500 transition-all" placeholder="Search script..." onkeyup="filterScripts()">
+                </div>
+                <div id="scriptList" class="flex overflow-x-auto gap-6 scrollbar-hide snap-x snap-mandatory" onscroll="updateScrollDots('scriptList', 'scrollDots')"></div>
+                <div id="scrollDots" class="scroll-dots"></div>
+            </div>
+
+            <div class="mt-16 px-6 hidden" id="populerContainer">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="w-2 h-6 bg-pink-500 rounded-full"></div>
+                    <h3 class="font-black text-xl italic text-pink-500 uppercase">Populer Review</h3>
+                </div>
+                <div id="populerList" class="flex overflow-x-auto gap-6 scrollbar-hide snap-x snap-mandatory" onscroll="updateScrollDots('populerList', 'populerDots')"></div>
+                <div id="populerDots" class="scroll-dots"></div>
+            </div>
+
+            <div class="px-6 mt-16">
+                <div class="flex justify-between items-end mb-8 border-b border-white/5 pb-6">
+                    <div>
+                        <h3 class="font-black text-2xl section-header uppercase">Community</h3>
+                        <p id="reviewCountText" class="text-[10px] text-blue-500 font-black uppercase tracking-widest mt-2">0 Reviews</p>
+                    </div>
+                    <button id="addReviewBtn" onclick="openModal(); playSfx('pop')" class="bg-blue-600 text-[10px] font-black px-6 py-3.5 rounded-2xl shadow-xl shadow-blue-600/20 active:scale-95 transition-all">TAMBAH ULASAN</button>
+                </div>
+
+                <div class="bg-white/5 rounded-3xl p-6 mb-10 border border-white/5 flex gap-6 items-center">
+                    <div class="text-center">
+                        <div class="text-5xl font-black text-white" id="bigRating">0.0</div>
+                        <div class="flex text-[10px] text-yellow-500 mt-2 gap-0.5 justify-center">
+                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                        </div>
+                    </div>
+                    <div class="flex-1 space-y-2">
+                        <div id="ratingBarsContainer" class="space-y-1.5"></div>
+                    </div>
+                </div>
+
+                <div id="commentList"></div>
+                
+                <div id="showAllContainer" class="hidden mt-6 flex flex-col gap-3 items-center">
+                    <button id="toggleCommentsBtn" onclick="togglePagination()" class="w-full bg-blue-600/10 border border-blue-500/30 px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest text-blue-400 hover:bg-blue-600/20 transition-all">Lihat Komentar Lainnya</button>
+                    <button id="hideCommentsBtn" onclick="resetPagination()" class="hidden text-[9px] font-black uppercase text-gray-500 tracking-widest">Sembunyikan Komentar</button>
+                </div>
+            </div>
+
+            <footer id="mainFooter" class="mt-20 border-t border-white/5 bg-[#0a1120]/80 backdrop-blur-xl pt-16 pb-12"></footer>
+        </main>
+    </div>
+
+    <div id="footerPageModal" class="f-modal">
+        <div class="f-modal-content">
+            <h2 id="fPageTitle" class="pixel-font text-blue-400 text-xs mb-6 uppercase">Title</h2>
+            <div id="fPageContent" class="text-gray-400 text-xs leading-relaxed max-h-[60vh] overflow-y-auto pr-2"></div>
+            <button onclick="closeFooterModal(); playSfx('pop')" class="w-full mt-8 py-4 bg-white/5 border border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-widest">Tutup</button>
+        </div>
+    </div>
+
+    <div id="revModal" class="fixed inset-0 bg-black/95 z-[2000] hidden flex items-center justify-center p-6 backdrop-blur-2xl">
+        <div class="bg-[#0d1425] w-full max-sm rounded-[2.5rem] p-8 border border-blue-500/30 shadow-2xl">
+            <h3 id="modalTitle" class="text-xl font-black text-center mb-6 uppercase">Kirim Ulasan</h3>
+            <div class="flex justify-center gap-2 text-3xl mb-6" id="starInput">
+                <span class="cursor-pointer text-gray-800" data-v="1">★</span>
+                <span class="cursor-pointer text-gray-800" data-v="2">★</span>
+                <span class="cursor-pointer text-gray-800" data-v="3">★</span>
+                <span class="cursor-pointer text-gray-800" data-v="4">★</span>
+                <span class="cursor-pointer text-gray-800" data-v="5">★</span>
+            </div>
+            <input id="revName" type="text" placeholder="Nama Anda" class="w-full bg-[#16213e] p-4 rounded-xl mb-4 text-sm outline-none border border-white/5">
+            <textarea id="revText" placeholder="Tulis ulasan atau balasan..." class="w-full bg-[#16213e] p-4 rounded-xl h-32 mb-6 text-sm outline-none border border-white/5 resize-none"></textarea>
+            <div class="flex gap-4">
+                <button onclick="closeModal(); playSfx('pop')" class="flex-1 text-gray-500 font-bold uppercase text-[10px]">Batal</button>
+                <button id="submitReviewBtn" onclick="postReview()" class="flex-1 bg-blue-600 rounded-xl py-4 font-black text-white uppercase text-[10px] shadow-lg shadow-blue-600/30">Kirim</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="config.js"></script>
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getDatabase, ref, onValue, update } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBWzdER_D3O1GeGuXZI43pBtZkRjLiI788",
+            authDomain: "awang-16d52.firebaseapp.com",
+            databaseURL: "https://awang-16d52-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "awang-16d52",
+            storageBucket: "awang-16d52.firebasestorage.app",
+            messagingSenderId: "719552352212",
+            appId: "1:719552352212:web:809b94baf525a41b08d041"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const dbRef = ref(db, 'siteDataV4');
+
+        if(!localStorage.getItem('user_uid_v4')) {
+            localStorage.setItem('user_uid_v4', 'uid_' + Math.random().toString(36).substr(2, 9));
+        }
+        const USER_UID = localStorage.getItem('user_uid_v4');
+        const ADMIN_UID = "uid_4qa9c3v1u"; 
+
+        window.siteData = { comments: [], totalLikes: 0, visitorCount: 0, scriptLikes: {}, dislikes: {} };
+        let selectedStar = 5;
+        let editingId = null;
+        let currentParentId = null; 
+        
+        let visibleCount = 10;
+
+        function formatDate(isoString) {
+            if (!isoString) return "-";
+            const date = new Date(isoString);
+            const months = ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"];
+            return `${date.getDate()} ${months[date.getMonth()]} ${date.getFullYear()} • ${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+        }
+
+        window.playSfx = (type) => {
+            const sound = document.getElementById(type === 'success' ? 'sound-success' : 'sound-pop');
+            if(sound) { sound.currentTime = 0; sound.play().catch(()=>{}); }
+        };
+
+        window.renderAll = function() {
+            document.getElementById('statUsers').innerText = siteData.visitorCount || 0;
+            const comms = siteData.comments || [];
+            const totalCommLikes = comms.reduce((sum, c) => sum + (c.likes || 0), 0);
+            document.getElementById('statLikes').innerText = totalCommLikes;
+            document.getElementById('statScripts').innerText = CONFIG.items.length;
+            const avg = comms.length ? (comms.reduce((a,b) => a + (b.star || 0), 0) / comms.length).toFixed(1) : "0.0";
+            document.getElementById('statRating').innerText = avg;
+            document.getElementById('bigRating').innerText = avg;
+            document.getElementById('reviewCountText').innerText = `${comms.length} REVIEWS`;
+            renderRatingBars(comms);
+            renderComments();
+            renderPopuler();
+            renderScripts(CONFIG.items);
+        };
+
+        function renderRatingBars(comms) {
+            const container = document.getElementById('ratingBarsContainer');
+            const total = comms.length || 1;
+            let html = '';
+            for(let i=5; i>=1; i--) {
+                const count = comms.filter(c => c.star === i).length;
+                const perc = (count / total) * 100;
+                html += `<div class="flex items-center gap-3"><span class="text-[10px] font-bold w-2">${i}</span><div class="rating-bar-bg"><div class="rating-bar-fill" style="width: ${perc}%"></div></div></div>`;
+            }
+            container.innerHTML = html;
+        }
+
+        window.togglePagination = () => {
+            const mainComments = (siteData.comments || []).filter(c => !c.parentId);
+            const remaining = mainComments.length - visibleCount;
+            if (remaining > 0) {
+                const increment = Math.max(5, Math.ceil(remaining / 2));
+                visibleCount += increment;
+            }
+            renderComments();
+            playSfx('pop');
+        };
+
+        window.resetPagination = () => {
+            visibleCount = 10;
+            renderComments();
+            playSfx('pop');
+            document.getElementById('reviewCountText').scrollIntoView({ behavior: 'smooth' });
+        };
+
+        window.toggleCommentMenu = (id) => {
+            const allMenus = document.querySelectorAll('.dropdown-menu');
+            const targetMenu = document.getElementById(`menu-${id}`);
+            const isActive = targetMenu.classList.contains('active');
+            allMenus.forEach(m => m.classList.remove('active'));
+            if (!isActive) targetMenu.classList.add('active');
+            playSfx('pop');
+        };
+
+        window.addEventListener('click', (e) => {
+            if (!e.target.closest('.comment-menu-container')) {
+                document.querySelectorAll('.dropdown-menu').forEach(m => m.classList.remove('active'));
+            }
+        });
+
+        window.copyMyUID = () => {
+            const uid = localStorage.getItem('user_uid_v4');
+            navigator.clipboard.writeText(uid).then(() => {
+                Swal.fire({
+                    title: 'UID Disalin!',
+                    text: uid,
+                    icon: 'success',
+                    background: '#0d1425',
+                    color: '#fff'
+                });
+            });
+        };
+
+        window.renderComments = function() {
+            const container = document.getElementById('commentList');
+            const paginationContainer = document.getElementById('showAllContainer');
+            const hideBtn = document.getElementById('hideCommentsBtn');
+            const data = siteData.comments || [];
+            const isViewerAdmin = (USER_UID === ADMIN_UID);
+            
+            const allSorted = [...data].sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+            const mainComments = allSorted.filter(c => !c.parentId);
+            
+            if (mainComments.length > 10) {
+                paginationContainer.classList.remove('hidden');
+                if (visibleCount >= mainComments.length) {
+                    document.getElementById('toggleCommentsBtn').classList.add('hidden');
+                    hideBtn.classList.remove('hidden');
+                } else {
+                    document.getElementById('toggleCommentsBtn').classList.remove('hidden');
+                    hideBtn.classList.add('hidden');
+                }
+            } else {
+                paginationContainer.classList.add('hidden');
+            }
+
+            const displayedMains = mainComments.slice(0, visibleCount);
+            const myInteractions = JSON.parse(localStorage.getItem('my_ints_v4') || '{}');
+
+            container.innerHTML = displayedMains.map(c => {
+                const isCommentDeveloper = (c.uid === ADMIN_UID);
+                const isMyComment = (c.uid === USER_UID);
+                const userInt = myInteractions[c.id]; 
+                const relevantReps = data.filter(r => r.parentId === c.id).sort((a,b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
+
+                let stars = '';
+                for(let i=1; i<=5; i++) stars += `<i class="fas fa-star text-[8px] ${i <= (c.star || 0) ? 'star-active' : 'star-inactive'}"></i>`;
+
+                return `
+                <div class="comment-wrapper" id="comment-${c.id}">
+                    <div class="comment-main">
+                        <div class="avatar-container">
+                            <div class="avatar-img flex items-center justify-center text-white font-black text-sm">
+                                ${c.name ? c.name.charAt(0).toUpperCase() : '?'}
+                            </div>
+                            ${c.adminLoved ? `<div class="admin-love-badge"><i class="fas fa-heart"></i></div>` : ''}
+                        </div>
+                        <div class="flex-1 pr-8">
+                            <div class="flex items-center justify-between">
+                                <span class="font-black text-xs flex items-center ${isCommentDeveloper ? 'text-blue-400' : 'text-gray-200'}">
+                                    ${c.name} ${isCommentDeveloper ? '<span class="dev-badge">Developer</span>' : ''}
+                                </span>
+                                <span class="text-[8px] timestamp-text font-bold uppercase tracking-tighter">${formatDate(c.timestamp)}</span>
+                            </div>
+                            <div class="flex mb-2">${stars}</div>
+                            <p class="text-gray-300 text-[12px] leading-snug mb-3">${c.text}</p>
+                            <div class="flex items-center gap-5">
+                                <button onclick="handleEngagement('${c.id}', 'like')" class="eng-btn flex items-center gap-1.5 text-[10px] font-black ${userInt === 'like' ? 'text-blue-400' : 'text-gray-500'}">
+                                    <i class="${userInt === 'like' ? 'fas' : 'far'} fa-thumbs-up"></i> ${c.likes || 0}
+                                </button>
+                                <button onclick="handleEngagement('${c.id}', 'dislike')" class="eng-btn flex items-center gap-1.5 text-[10px] font-black ${userInt === 'dislike' ? 'text-red-400' : 'text-gray-500'}">
+                                    <i class="${userInt === 'dislike' ? 'fas' : 'far'} fa-thumbs-down"></i> ${c.dislikes || 0}
+                                </button>
+                                <button onclick="replyComment('${c.id}', '${c.name}')" class="eng-btn text-gray-400 text-[10px] font-black uppercase hover:text-white">Balas</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="comment-menu-container">
+                        <div class="dot-menu-btn" onclick="toggleCommentMenu('${c.id}')"><i class="fas fa-ellipsis-v text-xs"></i></div>
+                        <div class="dropdown-menu" id="menu-${c.id}">
+                            ${isMyComment ? `<div class="dropdown-item" onclick="editComment('${c.id}')"><i class="fas fa-edit"></i> Edit</div>` : ''}
+                            ${isViewerAdmin ? `<div class="dropdown-item" onclick="loveComment('${c.id}')"><i class="fas fa-heart text-red-500"></i> ${c.adminLoved ? 'Unlove' : 'Love'}</div>` : ''}
+                            ${(isMyComment || isViewerAdmin) ? `<div class="dropdown-item danger" onclick="deleteComment('${c.id}')"><i class="fas fa-trash-alt"></i> Hapus</div>` : ''}
+                            ${isViewerAdmin ? `<div class="dropdown-item" onclick="copyMyUID()"><i class="fas fa-fingerprint"></i> Salin UID Saya</div>` : ''}
+                            <div class="dropdown-item" onclick="Swal.fire({title:'Laporan', text:'Laporan terkirim ke admin', icon:'success', background:'#0d1425', color:'#fff'})"><i class="fas fa-flag"></i> Lapor</div>
+                        </div>
+                    </div>
+
+                    <div class="reply-section ${relevantReps.length === 0 ? 'hidden' : ''}">
+                        ${relevantReps.map(r => {
+                            const isRepDeveloper = (r.uid === ADMIN_UID);
+                            const isMyRep = (r.uid === USER_UID);
+                            const repInt = myInteractions[r.id];
+                            return `
+                            <div class="reply-item flex gap-3 mb-2 relative pr-8" id="comment-${r.id}">
+                                <div class="w-8 h-8 rounded-full border border-white/10 flex-shrink-0 bg-blue-900 flex items-center justify-center text-[10px] font-bold relative">
+                                    ${r.name ? r.name.charAt(0).toUpperCase() : '?'}
+                                    ${r.adminLoved ? `<div class="admin-love-badge" style="width:12px; height:12px; bottom:-1px; right:-1px;"><i class="fas fa-heart" style="font-size:6px;"></i></div>` : ''}
+                                </div>
+                                <div class="bg-white/5 p-3 rounded-2xl flex-1 border border-white/5">
+                                    <div class="flex justify-between items-center mb-1">
+                                        <span class="text-[10px] font-black flex items-center ${isRepDeveloper ? 'text-blue-400' : 'text-gray-400'}">
+                                            ${r.name} ${isRepDeveloper ? '<span class="dev-badge" style="font-size:6px; padding:1px 4px;">Developer</span>' : ''}
+                                        </span>
+                                        <span class="text-[7px] timestamp-text uppercase font-bold">${formatDate(r.timestamp)}</span>
+                                    </div>
+                                    <p class="text-[11px] text-gray-300 mb-2">${r.text}</p>
+                                    <div class="flex gap-4 items-center">
+                                        <button onclick="handleEngagement('${r.id}', 'like')" class="text-[9px] font-black ${repInt === 'like' ? 'text-blue-400' : 'text-gray-500'}"><i class="fas fa-thumbs-up"></i> ${r.likes || 0}</button>
+                                        <button onclick="handleEngagement('${r.id}', 'dislike')" class="text-[9px] font-black ${repInt === 'dislike' ? 'text-red-400' : 'text-gray-500'}"><i class="fas fa-thumbs-down"></i> ${r.dislikes || 0}</button>
+                                        <button onclick="replyComment('${c.id}', '${r.name}')" class="text-[8px] text-gray-600 font-black uppercase">Balas</button>
+                                    </div>
+                                </div>
+                                <div class="comment-menu-container reply-menu-pos">
+                                    <div class="dot-menu-btn" onclick="toggleCommentMenu('${r.id}')" style="width:24px; height:24px;"><i class="fas fa-ellipsis-v text-[10px]"></i></div>
+                                    <div class="dropdown-menu" id="menu-${r.id}">
+                                        ${isMyRep ? `<div class="dropdown-item" onclick="editComment('${r.id}')"><i class="fas fa-edit"></i> Edit</div>` : ''}
+                                        ${isViewerAdmin ? `<div class="dropdown-item" onclick="loveComment('${r.id}')"><i class="fas fa-heart text-red-500"></i> ${r.adminLoved ? 'Unlove' : 'Love'}</div>` : ''}
+                                        ${(isMyRep || isViewerAdmin) ? `<div class="dropdown-item danger" onclick="deleteComment('${r.id}')"><i class="fas fa-trash-alt"></i> Hapus</div>` : ''}
+                                        ${isViewerAdmin ? `<div class="dropdown-item" onclick="copyMyUID()"><i class="fas fa-fingerprint"></i> Salin UID Saya</div>` : ''}
+                                        <div class="dropdown-item" onclick="Swal.fire({title:'Laporan', text:'Laporan terkirim ke admin', icon:'success', background:'#0d1425', color:'#fff'})"><i class="fas fa-flag"></i> Lapor</div>
+                                    </div>
+                                </div>
+                            </div>`
+                        }).join('')}
+                    </div>
+                </div>`;
+            }).join('');
+        };
+
+        window.handleEngagement = (id, type) => {
+            let myInts = JSON.parse(localStorage.getItem('my_ints_v4') || '{}');
+            const updated = (siteData.comments || []).map(c => {
+                if(c.id === id) {
+                    if(myInts[id] === type) {
+                        c[type === 'like' ? 'likes' : 'dislikes'] = Math.max(0, (c[type === 'like' ? 'likes' : 'dislikes'] || 0) - 1);
+                        delete myInts[id];
+                    } else {
+                        if(myInts[id]) c[myInts[id] === 'like' ? 'likes' : 'dislikes'] = Math.max(0, (c[myInts[id] === 'like' ? 'likes' : 'dislikes'] || 0) - 1);
+                        c[type === 'like' ? 'likes' : 'dislikes'] = (c[type === 'like' ? 'likes' : 'dislikes'] || 0) + 1;
+                        myInts[id] = type;
+                    }
+                }
+                return c;
+            });
+            localStorage.setItem('my_ints_v4', JSON.stringify(myInts));
+            update(dbRef, { comments: updated });
+            playSfx('pop');
+        };
+
+        window.loveComment = (id) => {
+            const updated = (siteData.comments || []).map(c => {
+                if(c.id === id) c.adminLoved = !c.adminLoved;
+                return c;
+            });
+            update(dbRef, { comments: updated });
+            playSfx('success');
+        };
+
+        window.deleteComment = (id) => {
+            Swal.fire({ title: 'Hapus?', text: "Pesan Anda akan hilang selamanya.", icon: 'warning', background: '#0d1425', color: '#fff', showCancelButton: true, confirmButtonColor: '#3b82f6', confirmButtonText: 'Ya, Hapus' }).then(res => {
+                if(res.isConfirmed) {
+                    const updated = (siteData.comments || []).filter(c => c.id !== id && c.parentId !== id);
+                    update(dbRef, { comments: updated });
+                    playSfx('pop');
+                }
+            });
+        };
+
+        window.editComment = (id) => {
+            const comment = (siteData.comments || []).find(c => c.id === id);
+            if(!comment) return;
+            editingId = id;
+            selectedStar = comment.star || 5;
+            document.getElementById('revName').value = comment.name;
+            document.getElementById('revText').value = comment.text;
+            updateStarsUI();
+            openModal();
+            document.getElementById('modalTitle').innerText = "Edit Ulasan";
+        };
+
+        window.replyComment = (parentId, name) => {
+            currentParentId = parentId; 
+            document.getElementById('revText').value = `@${name} `;
+            openModal();
+            document.getElementById('modalTitle').innerText = "Balas Ulasan";
+            document.getElementById('revText').focus();
+            playSfx('pop');
+        };
+
+        window.postReview = () => {
+            const nameInput = document.getElementById('revName').value.trim();
+            const textInput = document.getElementById('revText').value.trim();
+            if(!textInput) return;
+            
+            const name = nameInput || "User_" + Math.floor(Math.random() * 999);
+            const currentData = Array.isArray(siteData.comments) ? siteData.comments : [];
+            let updated = [...currentData];
+            
+            if(editingId) {
+                updated = updated.map(c => c.id === editingId ? {...c, text: textInput, star: selectedStar} : c);
+                editingId = null;
+            } else {
+                const now = new Date();
+                const newId = 'rev_' + now.getTime();
+                const newComment = { 
+                    id: newId, 
+                    uid: USER_UID, 
+                    parentId: currentParentId || null, 
+                    name: name, 
+                    text: textInput, 
+                    star: currentParentId ? 5 : selectedStar, 
+                    likes: 0, 
+                    dislikes: 0, 
+                    adminLoved: false, 
+                    timestamp: now.toISOString() 
+                };
+                updated.push(newComment);
+                localStorage.setItem('user_name_v4', name);
+            }
+            
+            update(dbRef, { comments: updated }).then(() => { 
+                closeModal(); 
+                playSfx('success');
+            });
+        };
+
+        window.likeScript = (index) => {
+            const scriptId = `script_${index}`;
+            const myScriptLikes = JSON.parse(localStorage.getItem('my_script_likes_v4') || '{}');
+            let currentLikes = siteData.scriptLikes ? (siteData.scriptLikes[scriptId] || 0) : 0;
+            if(myScriptLikes[scriptId]) { currentLikes = Math.max(0, currentLikes - 1); delete myScriptLikes[scriptId]; } 
+            else { currentLikes += 1; myScriptLikes[scriptId] = true; }
+            localStorage.setItem('my_script_likes_v4', JSON.stringify(myScriptLikes));
+            const updates = {}; updates[`scriptLikes/${scriptId}`] = currentLikes;
+            update(dbRef, updates);
+            playSfx('pop');
+        };
+
+        function renderPopuler() {
+            const container = document.getElementById('populerList');
+            const data = (siteData.comments || []).filter(c => (c.likes || 0) >= 20).sort((a,b) => b.likes - a.likes).slice(0, 5);
+            if(data.length > 0) {
+                document.getElementById('populerContainer').classList.remove('hidden');
+                container.innerHTML = data.map(c => `
+                <div class="populer-card">
+                    <div class="flex gap-4">
+                        <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-blue-600 to-blue-400 flex items-center justify-center text-white font-black text-xl border border-white/20">${c.name ? c.name.charAt(0).toUpperCase() : '?'}</div>
+                        <div class="flex-1">
+                            <div class="flex justify-between items-start">
+                                <div class="font-black text-sm text-white">${c.name}</div>
+                                <i class="fas fa-crown text-yellow-500 text-xs animate-bounce"></i>
+                            </div>
+                            <div class="flex text-pink-500 text-[9px] font-black gap-1 mt-1 uppercase tracking-tighter"><i class="fas fa-heart"></i> ${c.likes} Likes</div>
+                            <p class="text-[11px] text-blue-100 mt-2 line-clamp-2 leading-relaxed italic">"${c.text}"</p>
+                        </div>
+                    </div>
+                </div>`).join('');
+                updateScrollDots('populerList', 'populerDots');
+            } else { document.getElementById('populerContainer').classList.add('hidden'); }
+        }
+
+        onValue(dbRef, (snap) => {
+            if(snap.exists()) {
+                const val = snap.val();
+                if(!val.comments) val.comments = [];
+                siteData = val;
+            }
+            renderAll();
+            setTimeout(() => {
+                const loader = document.getElementById('loader-wrapper');
+                loader.style.opacity = '0';
+                setTimeout(() => loader.style.display = 'none', 800);
+            }, 1000);
+        });
+
+        document.querySelectorAll('#starInput span').forEach(s => {
+            s.onclick = () => { selectedStar = parseInt(s.dataset.v); updateStarsUI(); playSfx('pop'); };
+        });
+
+        function updateStarsUI() {
+            document.querySelectorAll('#starInput span').forEach(x => {
+                x.classList.toggle('text-yellow-500', x.dataset.v <= selectedStar);
+                x.classList.toggle('text-gray-800', x.dataset.v > selectedStar);
+            });
+        }
+    </script>
+
+    <script>
+        function initUI() {
+            document.getElementById('navBrand').innerText = CONFIG.title;
+            document.getElementById('webSlogan').innerText = CONFIG.description;
+            document.getElementById('mainAvatar').src = CONFIG.profilePic;
+            document.getElementById('sidebarAvatar').src = CONFIG.profilePic;
+            document.getElementById('buyPanelBtn').href = CONFIG.buyPanelLink;
+            document.getElementById('customBg').style.backgroundImage = `url('${CONFIG.background}')`;
+            
+            const side = document.getElementById('sidebarContent');
+            side.innerHTML = CONFIG.sidebarCategories.map(cat => `
+                <div class="sidebar-category-header">
+                    <span class="text-[10px] text-blue-400 font-black uppercase tracking-widest">${cat.categoryName}</span>
+                </div>
+                ${cat.links.map(l => `
+                    <a href="${l.link}" onclick="playSfx('pop')" class="sidebar-item flex items-center gap-4 px-6 py-4">
+                        <div class="w-8 h-8 rounded-lg bg-blue-600/10 flex items-center justify-center border border-blue-500/20">
+                            <i class="${l.icon} text-blue-400 text-sm"></i>
+                        </div>
+                        <span class="text-xs font-black uppercase text-gray-300 tracking-wider">${l.name}</span>
+                        <i class="fas fa-chevron-right ml-auto text-[8px] text-gray-600"></i>
+                    </a>
+                `).join('')}
+            `).join('');
+            
+            const sBox = document.getElementById('socialBox');
+            sBox.innerHTML = CONFIG.socials.map(s => `<a href="${s.link}" onclick="playSfx('pop')" class="w-11 h-11 bg-white/5 border border-white/10 rounded-2xl flex items-center justify-center text-blue-400"><i class="${s.icon} text-lg"></i></a>`).join('');
+            
+            renderScripts(CONFIG.items);
+            renderFooter();
+        }
+
+        window.filterScripts = () => {
+            const query = document.getElementById('scriptSearch').value.toLowerCase();
+            const filtered = CONFIG.items.filter(it => it.title.toLowerCase().includes(query) || it.description.toLowerCase().includes(query));
+            renderScripts(filtered);
+        };
+
+        function renderScripts(data) {
+            const list = document.getElementById('scriptList');
+            const myScriptLikes = JSON.parse(localStorage.getItem('my_script_likes_v4') || '{}');
+            
+            if(data.length === 0) {
+                list.innerHTML = `<div class="empty-state">
+                    <div class="mb-4"><i class="fas fa-ghost text-4xl text-blue-500/20 animate-bounce"></i></div>
+                    <p class="text-white font-black text-sm uppercase tracking-widest">Script tidak ditemukan</p>
+                </div>`;
+                return;
+            }
+
+            list.innerHTML = data.map((item, idx) => {
+                const sId = `script_${idx}`;
+                const isLiked = myScriptLikes[sId];
+                const count = siteData.scriptLikes ? (siteData.scriptLikes[sId] || 0) : 0;
+                return `<div class="min-w-[280px] bg-[#111a2e] rounded-[2.5rem] overflow-hidden border border-white/5 snap-center relative">
+                    <img src="${item.thumbnail}" class="w-full h-44 object-cover">
+                    <div class="p-6">
+                        <div class="flex justify-between items-start mb-2">
+                            <h4 class="font-black text-sm text-white uppercase line-clamp-1">${item.title}</h4>
+                            <button onclick="likeScript(${idx})" class="flex items-center gap-1 text-[10px] ${isLiked ? 'text-pink-500' : 'text-gray-500'}">
+                                <i class="${isLiked ? 'fas' : 'far'} fa-heart"></i> ${count}
+                            </button>
+                        </div>
+                        <p class="text-[10px] text-gray-400 mb-6 line-clamp-2">${item.description}</p>
+                        <a href="${item.downloadLink}" onclick="playSfx('pop')" class="block text-center py-4 bg-blue-600 rounded-2xl text-[10px] font-black uppercase">Get Script</a>
+                    </div>
+                </div>`;
+            }).join('');
+            updateScrollDots('scriptList', 'scrollDots');
+        }
+
+        window.updateScrollDots = (cId, dId) => {
+            const list = document.getElementById(cId);
+            const dots = document.getElementById(dId);
+            if(!list || !dots) return;
+            const count = Math.ceil(list.scrollWidth / list.clientWidth);
+            const active = Math.round(list.scrollLeft / list.clientWidth);
+            dots.innerHTML = Array.from({length: count}).map((_, i) => `<div class="dot-item ${i === active ? 'active' : ''}"></div>`).join('');
+        }
+
+        async function startTerminalAnimation() {
+            const table = document.getElementById('terminalLines');
+            const logs = [
+                { t: "system.init()", c: "text-blue-400" },
+                { t: "fetching_database_v4... [OK]", c: "text-green-400" },
+                { t: "syncing_user_profile...", c: "text-purple-400" },
+                { t: "verifying_developer_id...", c: "text-yellow-400" },
+                { t: "root@shell: automation_active", c: "text-blue-300" },
+                { t: ">> system_rendering_complete", c: "text-pink-400" }
+            ];
+            let line = 1;
+            while(true) {
+                table.innerHTML = ''; line = 1;
+                for(let log of logs) {
+                    const tr = document.createElement('tr'); tr.className = 'term-row';
+                    tr.innerHTML = `<td class="term-num">${line++}</td><td class="term-code ${log.c}"><span class="txt"></span></td>`;
+                    table.appendChild(tr);
+                    const span = tr.querySelector('.txt');
+                    for(let char of log.t) { span.innerHTML += char; await new Promise(r => setTimeout(r, 30)); }
+                    await new Promise(r => setTimeout(r, 1000));
+                }
+                await new Promise(r => setTimeout(r, 4000));
+            }
+        }
+
+        function initTypingTitle() {
+            const el = document.getElementById('webTitle');
+            const words = CONFIG.typingWords;
+            let wIdx = 0, cIdx = 0, isDel = false;
+            function type() {
+                const cur = words[wIdx];
+                const txt = isDel ? cur.substring(0, cIdx--) : cur.substring(0, cIdx++);
+                el.innerHTML = txt === "" ? "&nbsp;" : txt;
+                if(!isDel && cIdx > cur.length) { isDel = true; setTimeout(type, 2000); }
+                else if(isDel && cIdx < 0) { isDel = false; wIdx = (wIdx+1)%words.length; setTimeout(type, 500); }
+                else setTimeout(type, isDel ? 60 : 120);
+            }
+            type();
+        }
+
+        function renderFooter() {
+            const foot = document.getElementById('mainFooter');
+            foot.innerHTML = `<div class="px-8 max-w-lg mx-auto">
+                <div class="text-center mb-10">
+                    <div class="pixel-font text-sm text-blue-500 mb-4">${CONFIG.title}</div>
+                    <p class="text-gray-500 text-[11px]">${CONFIG.footer.description}</p>
+                </div>
+                <div class="grid grid-cols-2 gap-8 mb-10 border-y border-white/5 py-10">
+                    <div>
+                        <h4 class="text-[10px] font-black text-white uppercase mb-4 tracking-widest">PAGES</h4>
+                        <div class="flex flex-col gap-3">
+                            <button onclick="openFooterPage('tos'); playSfx('pop')" class="text-left text-[11px] text-gray-500 font-bold uppercase">TOS</button>
+                            <button onclick="openFooterPage('privacy'); playSfx('pop')" class="text-left text-[11px] text-gray-500 font-bold uppercase">Privacy</button>
+                            <button onclick="openFooterPage('about'); playSfx('pop')" class="text-left text-[11px] text-gray-500 font-bold uppercase">About</button>
+                        </div>
+                    </div>
+                    <div>
+                        <h4 class="text-[10px] font-black text-white uppercase mb-4 tracking-widest">FOLLOW</h4>
+                        <div class="flex flex-wrap gap-2">
+                            ${CONFIG.socials.map(s => `<a href="${s.link}" onclick="playSfx('pop')" class="w-9 h-9 bg-white/5 rounded-xl flex items-center justify-center text-sm text-blue-400"><i class="${s.icon}"></i></a>`).join('')}
+                        </div>
+                    </div>
+                </div>
+                <div class="text-center text-[9px] text-gray-600 font-black uppercase tracking-[0.3em]">${CONFIG.footer.copyright}</div>
+            </div>`;
+        }
+
+        window.openFooterPage = (key) => { const m = document.getElementById('footerPageModal'); document.getElementById('fPageTitle').innerText = CONFIG.footerPages[key].title; document.getElementById('fPageContent').innerHTML = CONFIG.footerPages[key].content; m.classList.add('active'); };
+        window.closeFooterModal = () => { document.getElementById('footerPageModal').classList.remove('active'); };
+        window.toggleMenu = () => { document.getElementById('sidebar').classList.toggle('active'); document.getElementById('overlay').classList.toggle('active'); };
+        window.openModal = () => { document.getElementById('revModal').classList.remove('hidden'); const savedName = localStorage.getItem('user_name_v4'); if(savedName) document.getElementById('revName').value = savedName; document.getElementById('modalTitle').innerText = "Kirim Ulasan"; };
+        window.closeModal = () => { document.getElementById('revModal').classList.add('hidden'); editingId = null; currentParentId = null; document.getElementById('revText').value = ""; };
+
+        window.onload = () => {
+            initUI();
+            initTypingTitle();
+            startTerminalAnimation();
+            const bar = document.getElementById('loader-bar-fill');
+            let p = 0;
+            const intv = setInterval(() => { p += 10; bar.style.width = p+'%'; if(p>=100) clearInterval(intv); }, 80);
+        };
+    </script>
+</body>
+</html>

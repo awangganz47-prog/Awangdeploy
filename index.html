@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    <link rel="dns-prefetch" href="https://www.googleapis.com">
+    <link rel="dns-prefetch" href="https://img.youtube.com">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#050a15">
+    <meta name="description" content="Gudang Script Bot WhatsApp Free Terbaik dan Terlengkap - AwangXoffc ID">
+    
+    <title>AwangXoffc ID - Script Bot Free</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.6.2"></script>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Plus+Jakarta+Sans:wght@300;400;600;800;900&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    
+    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignal.js" async=""></script>
+    
+    <script src="config.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body oncontextmenu="return false;">
+
+    <div id="toastContainer" class="toast-container"></div>
+
+    <audio id="sound-pop" src="https://assets.mixkit.co/active_storage/sfx/2358/2358-preview.mp3"></audio>
+    <audio id="sound-success" src="https://assets.mixkit.co/active_storage/sfx/2019/2019-preview.mp3"></audio>
+
+    <div id="lightbox" onclick="closeLightbox()">
+        <img id="lightboxImg" class="lightbox-content" src="" alt="Preview">
+        <div class="absolute top-6 right-6 text-white text-3xl cursor-pointer hover:text-blue-400 transition-colors drop-shadow-lg">
+            <i class="fas fa-times"></i>
+        </div>
+    </div>
+
+    <div id="loader-wrapper">
+        <div class="loader-logo">
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M2 17L12 22L22 17" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M2 12L12 17L22 12" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+        </div>
+        <div class="loader-bar-container">
+            <div id="loader-bar-fill"></div>
+        </div>
+    </div>
+
+    <div id="customBg" class="main-bg-fixed"></div>
+    <div class="main-bg-overlay"></div>
+    <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+
+    <div class="app-container">
+        
+        <aside id="sidebar">
+            <div class="p-8 flex flex-col items-center border-b border-blue-500/20">
+                <div class="relative group cursor-pointer">
+                    <img src="" id="sidebarAvatar" class="w-20 h-20 rounded-full border-2 border-blue-500 p-1 object-cover shadow-[0_0_20px_rgba(59,130,246,0.5)] transition-transform group-hover:scale-105" alt="Admin">
+                    <div class="absolute inset-0 rounded-full border border-blue-500/50 animate-ping opacity-20"></div>
+                </div>
+                <span class="pixel-font text-[10px] text-blue-400 mt-4 uppercase tracking-widest text-shadow-glow">Command Center</span>
+            </div>
+            <div id="sidebarContent" class="py-6 overflow-y-auto h-[calc(100vh-180px)] custom-scrollbar"></div>
+        </aside>
+
+        <main class="pb-10">
+            
+            <nav class="p-6 flex justify-between items-center sticky top-0 z-50 transition-all" style="background: rgba(5, 10, 21, 0.85); backdrop-filter: blur(10px); border-bottom: 1px solid rgba(59,130,246,0.1);">
+                <button onclick="toggleMenu(); playSfx('pop')" class="w-10 h-10 flex items-center justify-center bg-blue-600/10 rounded-xl text-blue-400 border-t border-white/10 border-b-2 border-black/50 active:scale-95 transition-transform hover:bg-blue-600/20">
+                    <i class="fas fa-bars-staggered"></i>
+                </button>
+                <div class="glass-card px-5 py-2 rounded-full">
+                    <div id="navBrand" class="text-blue-400 text-[11px] font-black uppercase tracking-widest">LOADING...</div>
+                </div>
+            </nav>
+
+            <div class="text-center px-6 mt-4">
+                <div class="flex justify-center mb-6">
+                    <div class="relative">
+                        <img id="mainAvatar" src="" class="w-32 h-32 rounded-full object-cover shadow-[0_0_30px_rgba(59,130,246,0.3)]">
+                        <div class="absolute bottom-2 right-2 bg-green-500 w-5 h-5 rounded-full border-4 border-[#050a15] animate-pulse shadow-[0_0_10px_#22c55e]"></div>
+                    </div>
+                </div>
+                
+                <h1 class="pixel-font text-lg text-white mb-2 h-8 flex items-center justify-center" id="webTitle">&nbsp;</h1>
+                <p class="text-gray-400 text-xs px-4 mb-8 leading-relaxed font-medium" id="webSlogan"></p>
+
+                <div class="grid grid-cols-4 gap-2 mb-8">
+                    <div class="bg-white/5 p-3 rounded-2xl stat-box stat-blue">
+                        <div id="statUsers" class="text-blue-400 font-bold text-shadow-sm">0</div>
+                        <div class="text-[8px] text-gray-500 uppercase font-black">Visits</div>
+                    </div>
+                    <div class="bg-white/5 p-3 rounded-2xl stat-box stat-blue">
+                        <div id="statScripts" class="text-blue-400 font-bold text-shadow-sm">0</div>
+                        <div class="text-[8px] text-gray-500 uppercase font-black">Scripts</div>
+                    </div>
+                    <div class="bg-white/5 p-3 rounded-2xl stat-box stat-pink">
+                        <div id="statLikes" class="text-pink-500 font-bold text-shadow-sm">0</div>
+                        <div class="text-[8px] text-gray-500 uppercase font-black">Likes</div>
+                    </div>
+                    <div class="bg-white/5 p-3 rounded-2xl stat-box stat-yellow">
+                        <div id="statRating" class="text-yellow-400 font-bold text-shadow-sm">0.0</div>
+                        <div class="text-[8px] text-gray-500 uppercase font-black">Rating</div>
+                    </div>
+                </div>
+
+                <div class="px-2">
+                    <a id="buyPanelBtn" href="#" onclick="playSfx('pop')" target="_blank" class="block bg-gradient-to-r from-blue-700 to-blue-500 p-4 rounded-2xl font-black text-xs uppercase tracking-widest text-white shadow-lg shadow-blue-600/30 active:scale-95 transition-all hover:brightness-110 btn-3d">
+                        <i class="fas fa-rocket mr-2"></i> SALURAN INFORMATION
+                    </a>
+                    
+                    <div class="flex justify-center gap-4 mt-8" id="socialBox"></div>
+
+                    <div class="terminal-window text-left">
+                        <div class="terminal-header">
+                            <div class="flex gap-1.5 mr-4">
+                                <div class="w-2.5 h-2.5 rounded-full bg-[#ff5f56]"></div>
+                                <div class="w-2.5 h-2.5 rounded-full bg-[#ffbd2e]"></div>
+                                <div class="w-2.5 h-2.5 rounded-full bg-[#27c93f]"></div>
+                            </div>
+                            <span class="text-[9px] text-gray-500 font-mono tracking-wider">awang@shell:~</span>
+                        </div>
+                        <div class="terminal-body" id="terminalContent">
+                            <table class="term-table" id="terminalLines"></table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="mt-16 px-6">
+                <h2 class="pixel-font text-[10px] text-blue-400 section-header uppercase mb-6">Latest Free Scripts</h2>
+                
+                <div class="relative mb-6 group">
+                    <i class="fas fa-search absolute left-5 top-1/2 -translate-y-1/2 text-blue-500 z-10 text-sm transition-colors group-hover:text-blue-400"></i>
+                    <input type="text" id="scriptSearch" 
+                           class="w-full bg-[#111a2e] rounded-2xl py-4 pl-14 pr-4 text-sm outline-none text-white placeholder-gray-500 transition-all font-medium" 
+                           placeholder="Search script..." 
+                           onkeyup="filterScripts()">
+                </div>
+                
+                <div id="scriptList" class="scrollbar-hide" onscroll="updateScrollDots('scriptList', 'scrollDots')">
+                    <div class="skeleton-card skeleton"></div>
+                    <div class="skeleton-card skeleton"></div>
+                </div>
+                
+                <div id="scrollDots" class="scroll-dots"></div>
+            </div>
+
+            <div class="mt-16 px-6 hidden" id="populerContainer">
+                <div class="flex items-center gap-3 mb-6">
+                    <div class="w-2 h-6 bg-pink-500 rounded-full shadow-[0_0_10px_#ec4899]"></div>
+                    <h3 class="font-black text-xl italic text-pink-500 uppercase">Populer Review</h3>
+                </div>
+                <div id="populerList" class="scrollbar-hide" onscroll="updateScrollDots('populerList', 'populerDots')"></div>
+                <div id="populerDots" class="scroll-dots"></div>
+            </div>
+
+            <div class="px-6 mt-16" id="communitySection">
+                <div class="flex justify-between items-end mb-8 border-b border-white/5 pb-6">
+                    <div>
+                        <h3 class="font-black text-lg section-header uppercase">Rating dan ulasan</h3>
+                        <p id="reviewCountText" class="text-[10px] text-blue-500 font-black uppercase tracking-widest mt-2">0 Reviews</p>
+                    </div>
+                    <button id="addReviewBtn" onclick="openModal(); playSfx('pop')" class="bg-blue-600 text-white text-[10px] font-black px-6 py-3.5 rounded-2xl shadow-xl shadow-blue-600/20 active:scale-95 transition-all hover:bg-blue-500 btn-3d">
+                        TAMBAH ULASAN
+                    </button>
+                </div>
+
+                <div class="glass-card rounded-3xl p-6 mb-10 flex gap-6 items-center">
+                    <div class="text-center">
+                        <div class="text-5xl font-black text-white" id="bigRating">0.0</div>
+                        <div class="flex text-[10px] text-yellow-500 mt-2 gap-0.5 justify-center">
+                            <i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i>
+                        </div>
+                    </div>
+                    <div class="flex-1 space-y-2">
+                        <div id="ratingBarsContainer" class="space-y-1.5"></div>
+                    </div>
+                </div>
+
+                <div id="commentList"></div>
+                
+                <div id="showAllContainer" class="hidden mt-6 flex flex-col gap-3 items-center">
+                    <button id="toggleCommentsBtn" onclick="fetchNextComments()" class="w-full bg-blue-600/10 border border-blue-500/30 px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest text-blue-400 hover:bg-blue-600/20 transition-all btn-3d">
+                        Lihat Komentar Lainnya
+                    </button>
+                    <button id="hideCommentsBtn" onclick="resetPagination()" class="hidden text-[9px] font-black uppercase text-gray-500 tracking-widest hover:text-white mt-2">
+                        Sembunyikan Komentar
+                    </button>
+                </div>
+            </div>
+
+            <footer id="mainFooter" class="mt-20 border-t border-white/5 bg-[#0a1120]/80 backdrop-blur-xl pt-16 pb-12"></footer>
+        </main>
+    </div>
+
+    <div id="footerPageModal" class="f-modal">
+        <div class="f-modal-content">
+            <h2 id="fPageTitle" class="pixel-font text-blue-400 text-xs mb-6 uppercase">Title</h2>
+            <div id="fPageContent" class="text-gray-400 text-xs leading-relaxed max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar"></div>
+            <button onclick="closeFooterModal(); playSfx('pop')" class="w-full mt-8 py-4 bg-white/5 border border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-widest text-white hover:bg-white/10 transition-colors btn-3d">
+                Tutup
+            </button>
+        </div>
+    </div>
+
+    <div id="revModal" class="fixed inset-0 bg-black/95 z-[2000] hidden flex items-center justify-center p-6 backdrop-blur-2xl">
+        <div class="bg-[#0d1425] w-full max-sm rounded-[2.5rem] p-8 border border-blue-500/30 shadow-2xl relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-blue-600 to-purple-600"></div>
+            
+            <h3 id="modalTitle" class="text-xl font-black text-center mb-6 uppercase text-white tracking-wide">Kirim Ulasan</h3>
+            
+            <input type="text" id="hp_user_check" class="hp-field" tabindex="-1" autocomplete="off">
+            
+            <div class="flex justify-center gap-2 text-3xl mb-6" id="starInput">
+                <span class="cursor-pointer text-gray-800 transition-colors hover:scale-110 hover:text-yellow-400" data-v="1">★</span>
+                <span class="cursor-pointer text-gray-800 transition-colors hover:scale-110 hover:text-yellow-400" data-v="2">★</span>
+                <span class="cursor-pointer text-gray-800 transition-colors hover:scale-110 hover:text-yellow-400" data-v="3">★</span>
+                <span class="cursor-pointer text-gray-800 transition-colors hover:scale-110 hover:text-yellow-400" data-v="4">★</span>
+                <span class="cursor-pointer text-gray-800 transition-colors hover:scale-110 hover:text-yellow-400" data-v="5">★</span>
+            </div>
+            
+            <input id="revName" type="text" placeholder="Nama Anda" class="w-full bg-[#16213e] p-4 rounded-xl mb-4 text-sm outline-none border border-white/5 text-white placeholder-gray-500 focus:border-blue-500 transition-colors shadow-inner">
+            
+            <div id="profilePreviewContainer">
+                <img id="profilePreviewImg" src="" alt="Profile Preview">
+                <div id="removeProfilePreviewBtn" onclick="clearProfileSelection()"><i class="fas fa-times"></i></div>
+            </div>
+
+            <div class="upload-btn-wrapper">
+                <input type="file" id="revProfileFile" accept="image/*" class="hidden" onchange="previewProfileImage(event)">
+                <button onclick="document.getElementById('revProfileFile').click()" class="flex items-center gap-2 text-[10px] font-black text-blue-400 uppercase border border-blue-500/20 px-4 py-3 rounded-xl bg-blue-500/5 hover:bg-blue-500/10 transition-colors w-full justify-center btn-3d">
+                    <i class="fas fa-user-circle"></i> Upload Foto Profil (Opsional)
+                </button>
+            </div>
+            
+            <textarea id="revText" placeholder="Tulis ulasan atau balasan..." class="w-full bg-[#16213e] p-4 rounded-xl h-32 mb-4 text-sm outline-none border border-white/5 resize-none text-white placeholder-gray-500 focus:border-blue-500 transition-colors shadow-inner"></textarea>
+            
+            <div id="imagePreviewContainer">
+                <img id="imagePreviewImg" src="" alt="Image Preview">
+                <div id="removePreviewBtn" onclick="clearImageSelection()"><i class="fas fa-times"></i></div>
+            </div>
+            
+            <div class="upload-btn-wrapper">
+                <input type="file" id="revFile" accept="image/*" class="hidden" onchange="previewImage(event)">
+                <button onclick="document.getElementById('revFile').click()" class="flex items-center gap-2 text-[10px] font-black text-blue-400 uppercase border border-blue-500/20 px-4 py-3 rounded-xl bg-blue-500/5 hover:bg-blue-500/10 transition-colors w-full justify-center btn-3d">
+                    <i class="fas fa-image"></i> Sisipkan Gambar (Opsional)
+                </button>
+            </div>
+
+            <div class="flex gap-4">
+                <button onclick="closeModal(); playSfx('pop')" class="flex-1 text-gray-400 font-bold uppercase text-[10px] hover:text-white transition-colors bg-white/5 py-4 rounded-xl border border-white/10 btn-3d">
+                    Batal
+                </button>
+                <button id="submitReviewBtn" onclick="postReview()" class="flex-1 bg-blue-600 rounded-xl py-4 font-black text-white uppercase text-[10px] shadow-lg shadow-blue-600/30 hover:bg-blue-500 transition-colors active:scale-95 btn-3d">
+                    Kirim
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="utils.js"></script>
+    <script type="module" src="awang1.js"></script>
+    <script type="module" src="awang2.js"></script>
+    <script type="module" src="script_home.js"></script> 
+    <script src="main.js"></script>
+
+</body>
+</html>

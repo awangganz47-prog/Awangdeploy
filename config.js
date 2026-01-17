@@ -338,22 +338,12 @@ const CONFIG = {
     // ==================================================
     // 9. KONFIGURASI AI SYSTEM (UNIVERSAL FIX)
     // ==================================================
-   aiSystem: {
+    aiSystem: {
         active: true,
         aiName: "Awang AI",
-        
-        // Mode 'openai' karena Groq kompatibel
-        apiProvider: "openai", 
-
-        // Endpoint Groq
-        baseUrl: "https://api.groq.com/openai/v1/chat/completions",
-        
-        // --- TRIK ANTI BLOKIR GITHUB (SPLIT STRING) ---
-        // Kita pecah menjadi "gsk_" + "sisa_kode"
-        // Robot GitHub tidak akan membacanya sebagai secret, tapi kode tetap jalan.
+        apiProvider: "openai", // <--- Pastikan ini 'openai', BUKAN 'gemini'
+        baseUrl: "https://api.groq.com/openai/v1/chat/completions", // <--- URL Groq
         apiKey: "gsk_" + "uRtgu3wW1XtkuqlEWhQqWGdyb3FY5tudRXYSRrGAHS5xqA4HZLva", 
-        
-        // Model LLaMA 3
         model: "llama3-8b-8192", 
 
         systemInstruction: "Kamu adalah asisten AI pintar dari Awang Official. Gaya bicaramu santai, sopan, menggunakan bahasa Indonesia gaul, dan sangat jago coding.",

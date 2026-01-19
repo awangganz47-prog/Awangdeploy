@@ -2,210 +2,123 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
-    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
-    <link rel="dns-prefetch" href="https://www.googleapis.com">
-    <link rel="dns-prefetch" href="https://img.youtube.com">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#020617">
-    <meta name="description" content="Database Lengkap Script Bot WhatsApp Gratis - AwangXoffc ID">
-    
-    <title>All Scripts - AwangXoffc ID</title>
+    <title>Database Script - AwangXoffc ID</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.6.2"></script>
-    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Plus+Jakarta+Sans:wght@300;400;600;700;800;900&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
-    
-    <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignal.js" async=""></script>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Plus+Jakarta+Sans:wght@300;400;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
     
     <script src="config.js"></script>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="stylesc.css"> 
-
+    
     <style>
-        .notif-badge {
-            position: absolute; top: -2px; right: -2px;
-            background: #ef4444; color: white;
-            font-size: 8px; font-weight: 900;
-            width: 14px; height: 14px;
-            border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            border: 2px solid #0f172a;
-            animation: pulse-red 2s infinite;
+        .sc-container {
+            width: 100%;
+            max-width: 95%; 
+            margin: 0 auto;
         }
-        @keyframes pulse-red { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); } 70% { box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
-        
-        #notifModal {
-            transition: opacity 0.3s ease, transform 0.3s ease;
-            opacity: 0; pointer-events: none; transform: scale(0.95);
-        }
-        #notifModal.active {
-            opacity: 1; pointer-events: auto; transform: scale(1);
-        }
+        @media (min-width: 1200px) { .sc-container { max-width: 1100px; } }
+        .pixel-font { font-family: 'Press Start 2P', cursive; }
     </style>
 </head>
-<body oncontextmenu="return false;">
+<body class="bg-[#020617] text-slate-200 font-sans antialiased" oncontextmenu="return false;">
 
-    <div id="toastContainer" class="toast-container"></div>
+    <div id="customBg" class="fixed inset-0 bg-cover bg-center bg-no-repeat z-[-2]"></div>
+    <div class="fixed inset-0 bg-[#020617]/60 z-[-1] backdrop-blur-[1px]"></div>
+    <div class="overlay fixed inset-0 bg-black/80 z-[60] hidden" id="overlay" onclick="toggleMenu()"></div>
 
-    <audio id="sound-pop" src="https://assets.mixkit.co/active_storage/sfx/2358/2358-preview.mp3"></audio>
-    <audio id="sound-success" src="https://assets.mixkit.co/active_storage/sfx/2019/2019-preview.mp3"></audio>
-
-    <div id="lightbox" onclick="closeLightbox()">
-        <img id="lightboxImg" class="lightbox-content" src="" alt="Preview">
-        <div class="absolute top-6 right-6 text-white text-3xl cursor-pointer hover:text-[#60a5fa] transition-colors drop-shadow-lg">
-            <i class="fas fa-times"></i>
+    <aside id="sidebar" class="fixed top-0 left-0 h-full w-72 bg-[#020617] border-r border-[#1e293b] z-[70] transform -translate-x-full transition-transform duration-300 flex flex-col">
+        <div class="p-8 border-b border-[#1e293b] text-center">
+            <span class="pixel-font text-[10px] text-[#60a5fa] uppercase tracking-widest">AWANG OFFICIAL</span>
         </div>
-    </div>
-    
-    <div id="customBg" class="main-bg-fixed"></div>
-    
-    <div class="main-bg-overlay" style="background: linear-gradient(to bottom, rgba(15, 23, 42, 0.4), rgba(2, 6, 23, 0.7));"></div>
-    
-    <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+        <div id="sidebarContent" class="py-4 px-2 overflow-y-auto custom-scrollbar flex-1"></div>
+    </aside>
 
-    <div class="app-container" style="max-width: 1000px; margin: 0 auto;">
+    <main class="min-h-screen flex flex-col pb-24 relative w-full transition-all duration-300">
         
-        <aside id="sidebar">
-            <div class="p-8 flex flex-col items-center">
-                <div class="relative group cursor-pointer">
-                    <img src="" id="sidebarAvatar" class="w-20 h-20 rounded-full border-2 border-[#60a5fa] p-1 object-cover shadow-[0_0_20px_rgba(96,165,250,0.5)] transition-transform group-hover:scale-105" alt="Admin">
-                    <div class="absolute inset-0 rounded-full border border-[#60a5fa]/50 animate-ping opacity-20"></div>
+        <nav class="sticky top-0 z-50 bg-[#020617]/80 backdrop-blur-md border-b border-[#1e293b] h-16 w-full shadow-lg">
+            <div class="max-w-[95%] mx-auto px-0 h-full flex justify-between items-center">
+                <button onclick="toggleMenu(); playSfx('pop')" class="w-10 h-10 flex items-center justify-center bg-[#1e293b]/50 rounded-xl text-[#60a5fa] border border-[#334155] active:scale-95 transition-transform hover:bg-[#334155]">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <div class="font-black text-xs tracking-[0.2em] text-[#f8fafc] flex items-center gap-2 uppercase">
+                    <i class="fas fa-database text-[#60a5fa]"></i> <span id="pageTitleDisplay">DATABASE</span>
                 </div>
-                
-                <div class="mt-4"></div>
-                
-                <span class="pixel-font text-[10px] text-[#60a5fa] uppercase tracking-widest">AWANG OFFICIAL</span>
+                <a href="index.html" onclick="playSfx('pop')" class="w-10 h-10 flex items-center justify-center bg-[#1e293b]/50 rounded-xl text-gray-400 hover:text-white border border-[#334155] active:scale-95 transition-transform hover:bg-[#334155]">
+                    <i class="fas fa-home"></i>
+                </a>
+            </div>
+        </nav>
+
+        <div class="w-full pt-8 flex-1 sc-container">
+            
+            <div class="text-center mb-8">
+                <h1 class="pixel-font text-[#60a5fa] text-sm md:text-base mb-3 leading-relaxed drop-shadow-[0_0_10px_rgba(96,165,250,0.5)]">AWANG OFFICIAL</h1>
+                <p id="pageSubtitleDisplay" class="text-[#94a3b8] text-[10px] font-medium tracking-wide uppercase">Script Bot Collection</p>
+            </div>
+
+            <div class="relative mb-6 group max-w-3xl mx-auto">
+                <input type="text" id="scriptSearch" 
+                       class="w-full bg-[#0f172a]/80 text-[#f8fafc] text-sm rounded-2xl pl-12 pr-4 py-4 border border-[#334155] focus:border-[#60a5fa] focus:ring-1 focus:ring-[#60a5fa] placeholder-gray-500 transition-all outline-none font-medium shadow-lg backdrop-blur-sm" 
+                       placeholder="Cari script bot..." 
+                       onkeyup="filterScripts()">
+                <i class="fas fa-search absolute left-5 top-1/2 -translate-y-1/2 text-gray-500 group-focus-within:text-[#60a5fa] transition-colors"></i>
+            </div>
+
+            <div class="grid grid-cols-3 gap-3 mb-6 max-w-3xl mx-auto">
+                <button class="bg-[#1e293b]/80 border border-[#334155] rounded-xl py-3 text-[10px] text-gray-300 font-black uppercase tracking-widest hover:border-[#60a5fa] hover:text-white transition-all flex flex-col items-center justify-center gap-1 active:scale-95 btn-3d backdrop-blur-sm" onclick="toggleSortMenu(); playSfx('pop')">
+                    <i class="fas fa-sort text-[#60a5fa] mb-1"></i> Urutkan
+                </button>
+                <button class="bg-[#1e293b]/80 border border-[#334155] rounded-xl py-3 text-[10px] text-gray-300 font-black uppercase tracking-widest hover:border-[#60a5fa] hover:text-white transition-all flex flex-col items-center justify-center gap-1 active:scale-95 btn-3d backdrop-blur-sm" onclick="playSfx('pop')">
+                    <i class="fas fa-tags text-[#60a5fa] mb-1"></i> Tag
+                </button>
+                <button class="bg-[#1e293b]/80 border border-[#334155] rounded-xl py-3 text-[10px] text-gray-300 font-black uppercase tracking-widest hover:border-[#60a5fa] hover:text-white transition-all flex flex-col items-center justify-center gap-1 active:scale-95 btn-3d backdrop-blur-sm" onclick="playSfx('pop')">
+                    <i class="fas fa-filter text-[#60a5fa] mb-1"></i> Kategori
+                </button>
+            </div>
+
+            <div class="flex gap-3 overflow-x-auto pb-4 mb-4 hide-scrollbar justify-center">
+                <button class="tab-btn active px-5 py-2 rounded-full text-[10px] font-black bg-[#1e3a8a] text-[#60a5fa] border border-[#60a5fa] whitespace-nowrap transition-colors uppercase tracking-wider" onclick="applyScFilter('all')">Semua</button>
+                <button class="tab-btn px-5 py-2 rounded-full text-[10px] font-black text-gray-400 border border-[#334155] bg-[#0f172a]/80 hover:text-white hover:border-gray-500 whitespace-nowrap transition-colors uppercase tracking-wider" onclick="applyScFilter('new')">Baru</button>
+                <button class="tab-btn px-5 py-2 rounded-full text-[10px] font-black text-gray-400 border border-[#334155] bg-[#0f172a]/80 hover:text-white hover:border-gray-500 whitespace-nowrap transition-colors uppercase tracking-wider" onclick="applyScFilter('update')">Update</button>
+                <button class="tab-btn px-5 py-2 rounded-full text-[10px] font-black text-gray-400 border border-[#334155] bg-[#0f172a]/80 hover:text-white hover:border-gray-500 whitespace-nowrap transition-colors uppercase tracking-wider" onclick="applyScFilter('popular')">Populer</button>
+                <button class="tab-btn px-5 py-2 rounded-full text-[10px] font-black text-gray-400 border border-[#334155] bg-[#0f172a]/80 hover:text-white hover:border-gray-500 whitespace-nowrap transition-colors uppercase tracking-wider" onclick="applyScFilter('error')">Error</button>
             </div>
             
-            <div id="sidebarContent" class="py-6 overflow-y-auto h-[calc(100vh-200px)] custom-scrollbar"></div>
-        </aside>
-
-        <main class="pb-10 min-h-screen flex flex-col">
+            <div id="scriptList" class="pb-10 min-h-[200px] w-full"></div>
             
-            <nav class="p-6 flex justify-between items-center sticky top-0 z-50 transition-all" style="background: rgba(2, 6, 23, 0.85); backdrop-filter: blur(15px); border-bottom: 1px solid rgba(148, 163, 184, 0.1);">
-                <button onclick="toggleMenu(); playSfx('pop')" class="w-10 h-10 flex items-center justify-center bg-[#1e293b]/50 rounded-xl text-[#60a5fa] border-t border-white/10 border-b-2 border-black/50 active:scale-95 transition-transform hover:bg-[#334155]">
-                    <i class="fas fa-bars-staggered"></i>
-                </button>
-                
-                <div class="glass-card px-5 py-2 rounded-full border border-[#334155]">
-                    <div id="navBrand" class="pixel-font text-[#60a5fa] text-[10px] font-black uppercase tracking-widest">AWANG OFFICIAL</div>
-                </div>
-                
-                <div class="flex items-center gap-3">
-                    <a href="index.html" onclick="playSfx('pop')" class="w-10 h-10 flex items-center justify-center bg-[#1e293b]/50 rounded-xl text-[#60a5fa] border-t border-white/10 border-b-2 border-black/50 active:scale-95 transition-transform hover:bg-[#334155]">
-                        <i class="fas fa-home"></i>
-                    </a>
-                </div>
-            </nav>
-
-            <div class="mt-8 px-6 flex-1">
-                
-                <h1 class="sc-page-title text-[#60a5fa]">ALL SCRIPTS FREE</h1>
-                
-                <div class="relative mb-10 group max-w-xl mx-auto sc-search-wrapper">
-                    <i class="fas fa-search absolute left-5 top-1/2 -translate-y-1/2 text-[#475569] z-10 text-sm transition-colors group-hover:text-[#60a5fa]"></i>
-                    <input type="text" id="scriptSearch" 
-                           class="w-full bg-[#0f172a] rounded-2xl py-4 pl-14 pr-4 text-sm outline-none text-[#f8fafc] placeholder-gray-500 transition-all font-medium border border-[#334155] focus:border-[#60a5fa] focus:shadow-[0_0_20px_rgba(96,165,250,0.2)]" 
-                           placeholder="Cari script bot..." 
-                           onkeyup="filterScripts()">
-                </div>
-                
-                <div id="scriptList" class="script-grid-view">
-                    <div class="skeleton-card skeleton"></div>
-                    <div class="skeleton-card skeleton"></div>
-                    <div class="skeleton-card skeleton"></div>
-                    <div class="skeleton-card skeleton"></div>
-                </div>
-                
-                <div id="scPaginationBtn" class="w-full flex justify-center mt-6 mb-4 reveal-on-scroll"></div>
-                
-                <div id="scrollDots" class="scroll-dots"></div>
-                
-            </div>
-
-            <footer id="mainFooter" class="mt-12 border-t border-[#334155]/50 bg-[#020617]/90 backdrop-blur-xl pt-16 pb-12"></footer>
-        </main>
-    </div>
-
-    <div id="notifModal" class="fixed inset-0 z-[3000] flex items-center justify-center p-6 bg-black/80 backdrop-blur-sm hidden">
-        <div class="bg-[#0f172a] w-full max-w-sm rounded-3xl border border-[#334155] shadow-2xl overflow-hidden flex flex-col max-h-[70vh]">
-            <div class="p-5 border-b border-[#334155] flex justify-between items-center bg-[#020617]">
-                <h3 class="text-white font-black text-xs uppercase tracking-widest flex items-center gap-2">
-                    <i class="fas fa-bell text-[#60a5fa]"></i> Update Sistem
-                </h3>
-                <button onclick="toggleNotifModal()" class="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center text-gray-400 hover:text-white hover:bg-red-500/20 transition-colors">
-                    <i class="fas fa-times text-xs"></i>
-                </button>
-            </div>
-            <div id="notifContent" class="p-5 overflow-y-auto custom-scrollbar flex-1 space-y-3">
-                <div class="text-center py-10">
-                    <i class="fas fa-spinner fa-spin text-[#60a5fa] text-2xl mb-3"></i>
-                    <p class="text-gray-500 text-[10px]">Memuat update...</p>
-                </div>
-            </div>
-            <div class="p-4 border-t border-[#334155] bg-[#020617]">
-                <button onclick="markNotificationsRead()" class="w-full py-3 bg-[#1e293b] rounded-xl text-[#60a5fa] text-[10px] font-black uppercase tracking-widest hover:bg-[#334155] transition-colors border border-[#334155]">
-                    <i class="fas fa-check-double mr-2"></i> Tandai Sudah Dibaca
-                </button>
-            </div>
+            <div id="scPaginationBtn" class="w-full flex justify-center mt-4 mb-8"></div>
+            
         </div>
-    </div>
 
-    <div id="footerPageModal" class="f-modal">
-        <div class="f-modal-content">
-            <h2 id="fPageTitle" class="pixel-font text-[#60a5fa] text-xs mb-6 uppercase">Title</h2>
-            <div id="fPageContent" class="text-[#94a3b8] text-xs leading-relaxed max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar"></div>
-            <button onclick="closeFooterModal(); playSfx('pop')" class="w-full mt-8 py-4 bg-white/5 border border-white/10 rounded-2xl text-[10px] font-black uppercase tracking-widest text-white hover:bg-white/10 transition-colors btn-3d">
-                Tutup
-            </button>
-        </div>
-    </div>
+        <footer id="mainFooter" class="mt-auto border-t border-[#1e293b] bg-[#020617]/90 backdrop-blur-md pt-8 pb-8"></footer>
+    </main>
 
-    <div id="revModal" class="fixed inset-0 bg-black/95 z-[2000] hidden flex items-center justify-center p-6 backdrop-blur-2xl">
-        <div class="bg-[#0f172a] w-full max-sm rounded-[2.5rem] p-8 border border-[#334155] shadow-2xl relative overflow-hidden">
-            <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-[#1e3a8a] to-[#60a5fa]"></div>
-            <h3 id="modalTitle" class="text-xl font-black text-center mb-6 uppercase text-[#f8fafc] tracking-wide">Kirim Ulasan</h3>
-            <input type="text" id="hp_user_check" class="hp-field" tabindex="-1" autocomplete="off">
-            <div class="flex justify-center gap-2 text-3xl mb-6" id="starInput">
-                <span class="cursor-pointer text-gray-700 transition-colors" data-v="1">★</span>
-                <span class="cursor-pointer text-gray-700 transition-colors" data-v="2">★</span>
-                <span class="cursor-pointer text-gray-700 transition-colors" data-v="3">★</span>
-                <span class="cursor-pointer text-gray-700 transition-colors" data-v="4">★</span>
-                <span class="cursor-pointer text-gray-700 transition-colors" data-v="5">★</span>
-            </div>
-            <input id="revName" type="text" placeholder="Nama" class="w-full bg-[#020617] p-4 rounded-xl mb-4 text-sm outline-none text-[#f8fafc] border border-[#334155] focus:border-[#60a5fa] transition-colors">
-            <div id="profilePreviewContainer" style="display:none;">
-                <img id="profilePreviewImg" src="">
-                <div id="removeProfilePreviewBtn" onclick="clearProfileSelection()">x</div>
-            </div>
-            <input type="file" id="revProfileFile" class="hidden">
-            <textarea id="revText" placeholder="Pesan..." class="w-full bg-[#020617] p-4 rounded-xl h-32 mb-4 text-sm outline-none text-[#f8fafc] border border-[#334155] focus:border-[#60a5fa] transition-colors"></textarea>
-            <div id="imagePreviewContainer" style="display:none;">
-                <img id="imagePreviewImg" src="">
-                <div id="removePreviewBtn" onclick="clearImageSelection()">x</div>
-            </div>
-            <input type="file" id="revFile" class="hidden">
-            <div class="flex gap-4">
-                <button onclick="closeModal()" class="flex-1 text-gray-400 font-bold uppercase text-[10px] bg-white/5 py-4 rounded-xl border border-white/10 btn-3d">Tutup</button>
-                <button id="submitReviewBtn" onclick="postReview()" class="flex-1 bg-[#1e3a8a] rounded-xl py-4 font-black text-white uppercase text-[10px] btn-3d hover:bg-[#1e40af] transition-colors">Kirim</button>
-            </div>
-        </div>
-    </div>
-
+    <div id="notifModal" class="fixed inset-0 z-[3000] flex items-center justify-center p-6 bg-black/80 hidden backdrop-blur-sm"><div class="bg-[#0f172a] w-full max-w-sm rounded-2xl border border-[#334155] p-5 shadow-2xl"><h3 class="text-white font-black text-xs uppercase mb-3 border-l-4 border-[#60a5fa] pl-3">Notifikasi</h3><div id="notifContent" class="text-xs text-gray-400 leading-relaxed mb-4"></div><button onclick="toggleNotifModal()" class="w-full py-3 bg-[#1e293b] hover:bg-[#334155] border border-[#334155] rounded-xl text-[#60a5fa] text-[10px] font-black uppercase tracking-widest transition-all">Tutup</button></div></div>
+    <div id="footerPageModal" class="f-modal"><div class="f-modal-content"></div></div>
+    
     <script src="utils.js"></script>
     <script type="module" src="awang1.js"></script>
     <script type="module" src="awang2.js"></script>
     <script type="module" src="script_sc.js"></script> 
     <script src="main.js"></script>
-
+    
+    <script>
+        const bgEl = document.getElementById('customBg');
+        if(bgEl && typeof CONFIG !== 'undefined') bgEl.style.backgroundImage = `url('${CONFIG.background}')`;
+        document.addEventListener("DOMContentLoaded", () => {
+            if (typeof CONFIG !== 'undefined' && CONFIG.scriptPageConfig) {
+                const pTitle = document.getElementById('pageTitleDisplay');
+                const pSub = document.getElementById('pageSubtitleDisplay');
+                if(pTitle) pTitle.innerText = CONFIG.scriptPageConfig.pageTitle || "DATABASE";
+                if(pSub) pSub.innerText = CONFIG.scriptPageConfig.pageSubtitle || "Collection";
+                if(CONFIG.scriptPageConfig.searchPlaceholder) document.getElementById('scriptSearch').placeholder = CONFIG.scriptPageConfig.searchPlaceholder;
+            }
+        });
+    </script>
 </body>
 </html>

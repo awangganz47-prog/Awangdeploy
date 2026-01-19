@@ -2,264 +2,271 @@ import { update, increment } from "https://www.gstatic.com/firebasejs/10.7.1/fir
 
 // ====================================================
 // FILE SCRIPT_SC.JS
-// Edition: NAVY GRID RENDERER
-// Status: CLEANED (Unlock Logic Moved to awang2.js to prevent duplicates)
+// Edition: PERMANENT VIDEO LABEL
+// Status: FINAL (Left-Top Label Added)
 // ====================================================
 
-// State Lokal
-window.currentScSort = 'default'; 
-window.isScExpanded = false; 
+window.currentScFilter = 'all';
+window.isReverseSort = false;
+window.displayLimit = 5; 
+window.isShowingAll = false; 
 
-// --- FUNGSI UPDATE STATS REALTIME ---
-window.updateOnlyScriptStats = () => {
-    const downloads = window.siteData?.scriptDownloads || {};
-    const cards = document.querySelectorAll('.script-card');
-    cards.forEach(card => {
-        const id = card.id.replace('card-', '');
-        const dlEl = card.querySelector('.dl-count-val');
-        if (dlEl) {
-            const newVal = downloads[id] || 0;
-            if (dlEl.innerText !== window.formatK(newVal)) {
-                dlEl.innerText = window.formatK(newVal);
-            }
-        }
-    });
+function checkMaintenanceStatus() {
+    if (typeof CONFIG !== 'undefined' && CONFIG.maintenanceConfig?.active && CONFIG.maintenanceConfig.lockedPages.includes("sc.html")) {
+        window.location.href = "maintenance.html";
+    }
+}
+checkMaintenanceStatus();
+
+function formatCompactNumber(n) { return Intl.NumberFormat('en-US', { notation: "compact", maximumFractionDigits: 1 }).format(n); }
+
+// --- VIDEO PLAYER ---
+window.playInCard = (itemId, videoId) => {
+    const thumbContainer = document.getElementById(`thumb-${itemId}`);
+    if (!thumbContainer || !videoId) return;
+
+    if (!thumbContainer.getAttribute('data-original')) {
+        thumbContainer.setAttribute('data-original', thumbContainer.innerHTML);
+    }
+
+    // Ganti isi container dengan Video Frame (Label & Gambar akan tertimpa/hilang sementara)
+    thumbContainer.innerHTML = `
+        <iframe class="video-frame" src="https://www.youtube.com/embed/${videoId}?autoplay=1&rel=0" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        <button class="stop-video-btn" onclick="event.stopPropagation(); stopInCard('${itemId}')">
+            <i class="fas fa-stop"></i> Stop
+        </button>
+    `;
 };
 
-// --- FUNGSI UTAMA RENDER HALAMAN SC (GRID VIEW) ---
+window.stopInCard = (itemId) => {
+    const thumbContainer = document.getElementById(`thumb-${itemId}`);
+    if (!thumbContainer) return;
+    // Kembalikan HTML asli (Label & Gambar muncul lagi)
+    const originalHtml = thumbContainer.getAttribute('data-original');
+    if (originalHtml) thumbContainer.innerHTML = originalHtml;
+};
+
+// --- RENDER ENGINE ---
 window.renderScPageScripts = (data) => {
     const list = document.getElementById('scriptList');
+    const paginationContainer = document.getElementById('scPaginationBtn');
     const searchInput = document.getElementById('scriptSearch');
     
-    // Safety Check: Hanya jalan di halaman SC (Grid View)
-    if (!list || (list.classList && !list.classList.contains('script-grid-view'))) return;
+    if (!list) return;
 
-    injectFilterSystem(data);
-
-    let allItems = searchInput.value ? (window.currentFilteredScripts || []) : [...data];
-    
-    // Sorting Logic
-    if (window.currentScSort === 'popular') {
-        const downloads = window.siteData?.scriptDownloads || {};
-        allItems.sort((a, b) => (downloads[b.id] || 0) - (downloads[a.id] || 0));
-    } else if (window.currentScSort === 'latest') {
-        allItems.sort((a, b) => new Date(b.uploadedAt) - new Date(a.uploadedAt));
+    // A. FILTERING
+    let filteredData = [...data];
+    if (searchInput && searchInput.value.trim() !== "") {
+        const keyword = searchInput.value.toLowerCase();
+        filteredData = filteredData.filter(item => {
+            const title = (item.title || "").toLowerCase();
+            const desc = (item.description || "").toLowerCase();
+            const tags = item.tags ? item.tags.join(" ").toLowerCase() : "";
+            return title.includes(keyword) || desc.includes(keyword) || tags.includes(keyword);
+        });
+    } else {
+        if (window.currentScFilter === 'new') filteredData = filteredData.filter(item => isRecent(item.uploadedAt));
+        else if (window.currentScFilter === 'update') filteredData = filteredData.filter(item => (item.tags && item.tags.some(t => t.toLowerCase().includes('update') || t.toLowerCase().includes('fix'))) || (item.version && item.version.toLowerCase().includes('fix')));
+        else if (window.currentScFilter === 'error') filteredData = filteredData.filter(item => item.tags && item.tags.some(t => t.toLowerCase().includes('error')));
+        else if (window.currentScFilter === 'popular') {
+            const downloads = window.siteData?.scriptDownloads || {};
+            filteredData.sort((a, b) => (downloads[b.id] || 0) - (downloads[a.id] || 0));
+        }
     }
 
-    const isSearching = !!searchInput.value;
-    const LIMIT = 5;
-    let itemsToRender = allItems;
-    let showButton = false;
-    let remainingCount = 0;
-
-    // Pagination Logic (Expand/Collapse)
-    if (!isSearching && allItems.length > LIMIT) {
-        showButton = true;
-        remainingCount = allItems.length - LIMIT;
-        if (!window.isScExpanded) itemsToRender = allItems.slice(0, LIMIT);
+    // B. SORTING
+    if (window.currentScFilter !== 'popular') {
+        filteredData.sort((a, b) => {
+            const dateA = new Date(a.uploadedAt);
+            const dateB = new Date(b.uploadedAt);
+            return window.isReverseSort ? dateA - dateB : dateB - dateA;
+        });
     }
 
-    // Empty State
-    if (!itemsToRender || itemsToRender.length === 0) {
+    // C. EMPTY STATE
+    if (!filteredData || filteredData.length === 0) {
+        list.className = "flex w-full"; 
         list.innerHTML = `
-        <div class="empty-state reveal-on-scroll is-visible" style="width:100%; grid-column: 1 / -1; display:flex; flex-direction:column; align-items:center; justify-content:center; min-height:300px; background: #0f172a; border-color: #334155;">
-            <div class="mb-4 animate-bounce"><i class="fas fa-ghost text-4xl text-[#475569]"></i></div>
-            <p class="text-[#f8fafc] font-black text-sm uppercase tracking-widest">Script tidak ditemukan</p>
-            <button onclick="applyScFilter('default')" class="mt-4 text-[10px] text-[#60a5fa] font-bold hover:text-white transition-colors">Reset Filter</button>
+        <div class="flex flex-col items-center justify-center py-20 opacity-70 w-full animate-fade-in">
+            <div class="w-16 h-16 bg-[#1e293b] rounded-full flex items-center justify-center mb-4 border border-[#334155]">
+                <i class="fas fa-box-open text-2xl text-gray-500"></i>
+            </div>
+            <p class="text-[#94a3b8] font-bold text-xs uppercase tracking-widest">Data Tidak Ditemukan</p>
         </div>`;
-        renderPaginationButton(false); 
-        initScrollReveal(); 
+        if(paginationContainer) paginationContainer.innerHTML = '';
         return;
     }
 
-    // [STAGGERED ANIMATION LOGIC]
-    const htmlContent = itemsToRender.map((item, index) => {
+    // D. LIMIT
+    const totalItems = filteredData.length;
+    const currentLimit = window.isShowingAll ? totalItems : window.displayLimit;
+    const slicedData = filteredData.slice(0, currentLimit);
+
+    // E. RENDER ITEMS
+    list.className = "grid grid-cols-1 md:grid-cols-2 gap-6 w-full"; 
+
+    const htmlContent = slicedData.map((item, index) => {
         const regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
         const match = item.thumbnail.match(regExp);
         const videoId = (match && match[7].length == 11) ? match[7] : false;
         
-        // Thumbnail Logic
         const thumbUrl = videoId ? `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg` : item.thumbnail;
-        const fallbackUrl = videoId ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg` : 'https://placehold.co/600x400/0f172a/60a5fa?text=No+Image';
+        const fallbackUrl = videoId ? `https://img.youtube.com/vi/${videoId}/hqdefault.jpg` : 'https://placehold.co/600x337/1f2937/60a5fa?text=No+Image';
+
+        if(videoId) setTimeout(() => getRealYoutubeStats(videoId, item.id), 0);
+
+        const title = item.title;
+        const desc = item.description || "Script bot WhatsApp multi device fitur lengkap.";
+        const date = window.formatUploadDate(item.uploadedAt);
+        const version = item.version || "v1.0";
+        const tags = item.tags || ["Bot"];
+        const dlReal = (window.siteData?.scriptDownloads && window.siteData.scriptDownloads[item.id]) || 0;
+        const dlFormatted = formatCompactNumber(dlReal);
+        const rating = (Math.random() * (5.0 - 4.5) + 4.5).toFixed(1);
+
+        // BADGE KANAN ATAS (NEW/UPDATE)
+        let badgeHtml = '';
+        if (isRecent(item.uploadedAt)) badgeHtml = `<div class="status-badge badge-new">NEW</div>`;
+        else if (item.tags.some(t => t.toLowerCase().includes('update'))) badgeHtml = `<div class="status-badge badge-update">UPDATE</div>`;
+
+        // LABEL VIDEO KIRI ATAS (HANYA JIKA ADA VIDEO)
+        let videoHintHtml = '';
+        if (videoId) {
+            videoHintHtml = `
+            <div class="video-hint-badge">
+                <i class="fas fa-play-circle text-[10px]"></i> KETUK UNTUK PLAY VIDEO
+            </div>`;
+        }
+
+        const tagsHtml = tags.slice(0, 3).map(t => `<span class="tag-pill">${t}</span>`).join('');
         
-        // Async Fetch Youtube Stats
-        if(videoId && window.fetchYoutubeData) window.fetchYoutubeData(item.thumbnail, item.id);
-
-        // Tags Rendering
-        const tags = item.tags || ["#BotWA", "#JavaScript"]; 
-        const tagsHtml = tags.slice(0, 10).map(tag => `
-            <span class="text-[9px] font-black text-[#60a5fa] bg-[#1e3a8a]/30 border border-[#60a5fa]/20 px-2 py-1.5 rounded-lg tracking-wider uppercase">
-                ${tag}
-            </span>`).join('');
-
-        const dlCount = (window.siteData?.scriptDownloads && window.siteData.scriptDownloads[item.id]) || 0;
-        
-        // Delay Animation
-        const staggerDelay = (index % 10) * 150;
-
         return `
-        <div class="script-card reveal-on-scroll group" id="card-${item.id}" 
-             style="border-color: rgba(148, 163, 184, 0.1); transition-delay: ${staggerDelay}ms;">
-            
-            <div class="thumb-container" style="border-bottom-color: rgba(148, 163, 184, 0.05);">
-                <img src="${thumbUrl}" 
-                     loading="lazy" 
-                     decoding="async" 
-                     class="skeleton" 
-                     alt="${item.title}"
-                     style="width: 100%; height: 100%; object-fit: cover;"
-                     onload="this.classList.remove('skeleton'); this.style.opacity='1'"
-                     onerror="this.src='${fallbackUrl}'" 
-                     onclick="openLightbox(this.src)">
+        <div class="shiroko-card animate-fade-in">
+            <div class="shiroko-thumb" id="thumb-${item.id}">
+                ${badgeHtml}      ${videoHintHtml}  <img src="${thumbUrl}" loading="lazy" onerror="this.src='${fallbackUrl}'" onclick="playInCard('${item.id}', '${videoId}')">
                 
-                <div class="absolute top-2 right-2 bg-[#020617] px-2 py-1 rounded-md border border-[#334155] z-10 flex items-center gap-1 shadow-sm">
-                     <i class="fas fa-download text-[8px] text-green-400"></i><span class="text-[8px] font-bold text-white dl-count-val">${window.formatK(dlCount)}</span>
-                </div>
-                
-                <div class="absolute inset-0 bg-[#020617]/70 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4">
-                    <button onclick="shareScriptById('${item.id}'); event.stopPropagation()" class="w-10 h-10 rounded-full bg-[#1e293b] hover:bg-[#334155] flex items-center justify-center text-white border border-[#475569] transform scale-0 group-hover:scale-100 transition-all delay-75 shadow-lg"><i class="fas fa-share-alt"></i></button>
-                    <button onclick="openLightbox(this.closest('.thumb-container').querySelector('img').src); event.stopPropagation()" class="w-10 h-10 rounded-full bg-[#1e3a8a] hover:bg-[#2563eb] flex items-center justify-center text-white border border-[#60a5fa] transform scale-0 group-hover:scale-100 transition-all delay-100 shadow-lg"><i class="fas fa-search-plus"></i></button>
+                <div class="thumb-overlay" onclick="playInCard('${item.id}', '${videoId}')">
+                    <i class="fas fa-play-circle text-5xl text-white opacity-90 drop-shadow-lg transition-transform hover:scale-110"></i>
                 </div>
             </div>
-            
-            <div class="script-info-wrapper">
-                <div class="mb-2"><h4 id="title-${item.id}" class="text-sm font-black text-[#f8fafc] leading-tight uppercase tracking-wide group-hover:text-[#60a5fa] transition-colors cursor-default line-clamp-2">${item.title}</h4></div>
-                <div class="flex flex-wrap gap-2 mb-2">${tagsHtml}</div>
-                
-                <div class="card-stats-row mt-auto" style="border-top-color: rgba(148, 163, 184, 0.1);">
-                    <div class="stats-left">
-                        <div id="views-${item.id}" class="stat-item text-[#94a3b8]"><i class="fas fa-eye stat-icon-view" style="color: #60a5fa;"></i> -</div>
-                        <div id="likes-${item.id}" class="stat-item text-[#94a3b8]"><i class="fas fa-thumbs-up stat-icon-like" style="color: #ec4899;"></i> -</div>
-                    </div>
-                    <div class="stat-item text-[#94a3b8]"><i class="fas fa-calendar-alt stat-icon-date" style="color: #fbbf24;"></i> ${window.formatUploadDate(item.uploadedAt)}</div>
+
+            <div class="shiroko-body">
+                <div class="card-header">
+                    <h3 class="card-title" title="${title}">${title}</h3>
+                    <span class="version-badge">${version}</span>
                 </div>
-                
-                <div class="flex gap-2 mt-3 pt-3 border-t border-[#334155]/30">
-                    <button onclick="window.initUnlockProcess('${item.id}', '${item.downloadLink}'); playSfx('pop')" class="flex-1 py-3 bg-[#1e293b] hover:bg-[#334155] rounded-xl text-[10px] font-black uppercase text-white shadow-md shadow-[#0f172a]/30 active:scale-95 transition-all flex items-center justify-center gap-2"><i class="fas fa-download"></i> Download</button>
+
+                <p class="card-desc">${desc}</p>
+
+                <div class="card-info-row">
+                    <div class="card-date"><i class="far fa-calendar-alt text-[#fbbf24]"></i> ${date}</div>
+                    <div class="card-rating text-[10px] font-bold text-[#fbbf24]"><i class="fas fa-star"></i> ${rating}</div>
+                </div>
+
+                <div class="card-tags mb-auto">${tagsHtml}</div>
+
+                <div class="card-stats">
+                    <div class="stat-item text-blue" id="likes-${item.id}"><i class="fas fa-thumbs-up"></i> 0</div>
+                    <div class="stat-item text-view" id="views-${item.id}"><i class="fas fa-eye"></i> ...</div>
+                    <div class="stat-item text-green"><i class="fas fa-download"></i> ${dlFormatted}</div>
+                </div>
+
+                <div class="card-actions">
+                    <button onclick="window.initUnlockProcess('${item.id}', '${item.downloadLink}'); playSfx('pop')" class="btn-dl">
+                        <i class="fas fa-download"></i> DOWNLOAD
+                    </button>
+                    <button onclick="shareScriptById('${item.id}'); playSfx('pop')" class="btn-share" title="Bagikan">
+                        <i class="fas fa-share-alt"></i>
+                    </button>
+                    <button onclick="window.open('https://wa.me/?text=Download ${encodeURIComponent(title)} di ${window.location.href}', '_blank')" class="btn-icon whatsapp">
+                        <i class="fab fa-whatsapp"></i>
+                    </button>
+                    <button onclick="window.open('https://t.me/share/url?url=${encodeURIComponent(window.location.href)}&text=${encodeURIComponent(title)}', '_blank')" class="btn-icon telegram">
+                        <i class="fab fa-telegram-plane"></i>
+                    </button>
                 </div>
             </div>
         </div>`;
     }).join('');
 
-    window.requestAnimationFrame(() => {
-        list.innerHTML = htmlContent;
-        renderPaginationButton(showButton, remainingCount);
-        initScrollReveal(); 
-        window.isScriptRendered = true;
-    });
-};
-
-function renderPaginationButton(shouldShow, remainingCount) {
-    let btnContainer = document.getElementById('scPaginationBtn');
-    if (!btnContainer) {
-        const list = document.getElementById('scriptList');
-        btnContainer = document.createElement('div');
-        btnContainer.id = 'scPaginationBtn';
-        btnContainer.className = 'w-full flex justify-center mt-6 mb-4 reveal-on-scroll is-visible';
-        list.parentNode.insertBefore(btnContainer, list.nextSibling);
-    } else {
-        btnContainer.className = 'w-full flex justify-center mt-6 mb-4 reveal-on-scroll is-visible';
-    }
-
-    if (!shouldShow) { btnContainer.innerHTML = ''; btnContainer.style.display = 'none'; return; }
-    btnContainer.style.display = 'flex';
+    list.innerHTML = htmlContent;
     
-    const isExpanded = window.isScExpanded;
-    const btnText = isExpanded ? 'Sembunyikan Menu' : `Lihat Semua Script (${remainingCount}+ Lainnya)`;
-    const btnIcon = isExpanded ? 'fa-chevron-up' : 'fa-chevron-down';
-
-    btnContainer.innerHTML = `
-        <button onclick="toggleScView()" class="group relative px-8 py-4 bg-[#0f172a] rounded-2xl border border-[#334155] hover:border-[#60a5fa] transition-all active:scale-95 shadow-lg overflow-hidden">
-            <div class="absolute inset-0 bg-[#60a5fa]/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
-            <div class="relative flex items-center gap-3">
-                <span class="text-[10px] font-black uppercase tracking-widest text-[#f8fafc] group-hover:text-[#60a5fa] transition-colors">${btnText}</span>
-                <i class="fas ${btnIcon} text-xs text-[#94a3b8] group-hover:text-white transition-colors animate-bounce"></i>
-            </div>
-        </button>`;
-}
-
-window.toggleScView = () => {
-    window.isScExpanded = !window.isScExpanded;
-    playSfx('pop');
-    if(window.renderScPageScripts) window.renderScPageScripts(CONFIG.items);
-    if (!window.isScExpanded) {
-        const list = document.getElementById('scriptList');
-        if(list) list.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-};
-
-// --- FILTER & UI SYSTEM ---
-function injectFilterSystem(data) {
-    const searchInput = document.getElementById('scriptSearch');
-    if(!searchInput || document.getElementById('filter-btn-group')) return;
-    const parent = searchInput.parentElement;
-    parent.className = "sc-search-wrapper"; 
-    
-    const filterGroup = document.createElement('div');
-    filterGroup.id = "filter-btn-group";
-    filterGroup.style.position = "relative"; filterGroup.style.zIndex = "10002";
-    
-    filterGroup.innerHTML = `
-    <button id="btn-toggle-filter" onclick="toggleFilterMenu(event)"><i class="fas fa-sort-amount-down text-lg"></i></button>
-    <div id="filter-dropdown" class="hidden">
-        <div class="text-[9px] font-black text-[#94a3b8] uppercase px-3 py-2 border-b border-[#334155] mb-1">Filter Kategori</div>
-        <button onclick="applyScFilter('latest'); event.stopPropagation()" class="w-full text-left px-3 py-3 rounded-xl text-[10px] font-bold text-[#f8fafc] hover:bg-[#334155] transition-colors flex items-center justify-between group mb-1"><span class="flex items-center gap-2"><div class="w-6 h-6 rounded-lg bg-[#334155]/30 flex items-center justify-center"><i class="fas fa-clock text-[#60a5fa]"></i></div> Terbaru</span><i class="fas fa-check text-[#60a5fa] opacity-0 group-[.active-filter]:opacity-100" id="check-latest"></i></button>
-        <button onclick="applyScFilter('popular'); event.stopPropagation()" class="w-full text-left px-3 py-3 rounded-xl text-[10px] font-bold text-[#f8fafc] hover:bg-[#334155] transition-colors flex items-center justify-between group mb-1"><span class="flex items-center gap-2"><div class="w-6 h-6 rounded-lg bg-[#334155]/30 flex items-center justify-center"><i class="fas fa-fire text-red-500"></i></div> Terpopuler</span><i class="fas fa-check text-[#60a5fa] opacity-0" id="check-popular"></i></button>
-        <div class="h-[1px] bg-[#334155] my-2 mx-2"></div>
-         <button onclick="window.location.href='index.html'; playSfx('pop'); event.stopPropagation()" class="w-full text-left px-3 py-3 rounded-xl text-[10px] font-bold text-[#94a3b8] hover:bg-[#334155] transition-colors flex items-center gap-2"><i class="fas fa-home text-[#64748b]"></i> Kembali ke Home</button>
-    </div>`;
-
-    const searchIconWrapper = document.createElement('div');
-    searchIconWrapper.className = "absolute"; searchIconWrapper.innerHTML = '<i class="fas fa-search"></i>';
-    const savedValue = searchInput.value;
-    parent.innerHTML = ''; 
-    parent.appendChild(filterGroup); parent.appendChild(searchIconWrapper); parent.appendChild(searchInput);
-    searchInput.value = savedValue;
-    searchInput.removeEventListener('keyup', window.filterScripts); searchInput.addEventListener('keyup', window.filterScripts);
-    
-    document.addEventListener('click', (e) => {
-        const menu = document.getElementById('filter-dropdown');
-        const btn = document.getElementById('btn-toggle-filter');
-        if (menu && !menu.classList.contains('hidden')) {
-            if (!menu.contains(e.target) && !btn.contains(e.target)) {
-                menu.classList.add('hidden');
+    // F. TOGGLE BUTTON
+    if (paginationContainer) {
+        if (totalItems > 5) {
+            if (window.isShowingAll) {
+                paginationContainer.innerHTML = `
+                <button onclick="toggleShowAll()" class="load-more-btn">
+                    <span>TAMPILKAN LEBIH SEDIKIT</span>
+                    <i class="fas fa-chevron-up"></i>
+                </button>`;
+            } else {
+                paginationContainer.innerHTML = `
+                <button onclick="toggleShowAll()" class="load-more-btn">
+                    <span>TAMPILKAN SEMUA (${totalItems - 5} lagi)</span>
+                    <i class="fas fa-chevron-down animate-bounce"></i>
+                </button>`;
             }
+        } else {
+            paginationContainer.innerHTML = `
+            <div class="text-[10px] text-gray-600 font-bold uppercase tracking-widest mt-6 opacity-50">
+                - SELURUH DATA DITAMPILKAN -
+            </div>`;
         }
-    });
-}
-
-window.toggleFilterMenu = (event) => {
-    if(event) event.stopPropagation(); 
-    const menu = document.getElementById('filter-dropdown');
-    if(menu) {
-        menu.classList.toggle('hidden');
-        if (!menu.classList.contains('hidden')) { menu.style.animation = "menuFade 0.2s ease"; }
-        playSfx('pop');
     }
 };
 
-window.applyScFilter = (type) => {
-    window.currentScSort = type;
-    const checkLatest = document.getElementById('check-latest');
-    const checkPopular = document.getElementById('check-popular');
-    if(checkLatest) checkLatest.style.opacity = type === 'latest' ? '1' : '0';
-    if(checkPopular) checkPopular.style.opacity = type === 'popular' ? '1' : '0';
-    document.getElementById('filter-dropdown').classList.add('hidden');
-    window.isScExpanded = false;
-    if(window.renderScPageScripts) window.renderScPageScripts(CONFIG.items);
-    playSfx('success');
+function isRecent(d) { return Math.ceil(Math.abs(new Date() - new Date(d)) / (86400000)) <= 7; }
+
+async function getRealYoutubeStats(videoId, elementId) {
+    if(!videoId) return;
+    try {
+        const apiKey = CONFIG.firebase.apiKey; 
+        const response = await fetch(`https://www.googleapis.com/youtube/v3/videos?part=statistics&id=${videoId}&key=${apiKey}`);
+        const data = await response.json();
+        if (data.items?.[0]?.statistics) {
+            const s = data.items[0].statistics;
+            const vEl = document.getElementById(`views-${elementId}`);
+            const lEl = document.getElementById(`likes-${elementId}`);
+            if(vEl) vEl.innerHTML = `<i class="fas fa-eye"></i> ${formatCompactNumber(s.viewCount)}`;
+            if(lEl) lEl.innerHTML = `<i class="fas fa-thumbs-up"></i> ${formatCompactNumber(s.likeCount)}`;
+        }
+    } catch (e) {}
+}
+
+// --- INTERAKSI ---
+window.toggleShowAll = () => {
+    window.isShowingAll = !window.isShowingAll;
+    window.renderScPageScripts(CONFIG.items);
+    playSfx('pop');
 };
 
-function initScrollReveal() {
-    const observerOptions = { root: null, rootMargin: '50px 0px', threshold: 0.1 };
-    const observer = new IntersectionObserver((entries, obs) => {
-        entries.forEach((entry) => {
-            if (entry.isIntersecting) {
-                window.requestAnimationFrame(() => { entry.target.classList.add('is-visible'); });
-                obs.unobserve(entry.target);
-            }
-        });
-    }, observerOptions);
-    const cards = document.querySelectorAll('.reveal-on-scroll:not(.is-visible)');
-    cards.forEach(el => observer.observe(el));
+window.applyScFilter = (filterType) => {
+    window.currentScFilter = filterType;
+    window.isShowingAll = false;
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active', 'bg-[#1e3a8a]', 'text-[#60a5fa]', 'border-[#60a5fa]', 'shadow-glow'));
+    if(event?.target) event.target.classList.add('active', 'bg-[#1e3a8a]', 'text-[#60a5fa]', 'border-[#60a5fa]');
+    window.renderScPageScripts(CONFIG.items);
+    playSfx('pop');
+};
+
+window.filterScripts = () => {
+    window.isShowingAll = false;
+    window.renderScPageScripts(CONFIG.items);
+};
+
+window.toggleSortMenu = () => {
+    window.isReverseSort = !window.isReverseSort;
+    showToast(`Urutan: ${window.isReverseSort ? "Terlama" : "Terbaru"}`, "info");
+    window.renderScPageScripts(CONFIG.items);
+};
+
+window.shareScriptById = (id) => {
+    const item = CONFIG.items.find(i => i.id === id);
+    if (navigator.share && item) navigator.share({ title: item.title, url: window.location.href }).catch(()=>{});
+    else { navigator.clipboard.writeText(window.location.href); showToast("Link disalin!", "success"); }
+};
+
+if (typeof CONFIG !== 'undefined' && CONFIG.items) {
+    window.renderScPageScripts(CONFIG.items);
 }

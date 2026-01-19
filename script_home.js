@@ -9,7 +9,7 @@ import { update, increment } from "https://www.gstatic.com/firebasejs/10.7.1/fir
 window.renderHomeScripts = (data) => {
     const list = document.getElementById('scriptList');
     
-    // SAFETY CHECK: Hentikan jika ini bukan halaman Home
+    // SAFETY CHECK: Hentikan jika ini bukan halaman Home (cegah konflik dengan sc.html)
     if (!list || (list.classList && list.classList.contains('script-grid-view'))) return;
 
     // 1. TRANSFORM SEARCH BAR MENJADI BUTTON (Style Updated: Navy Tone)

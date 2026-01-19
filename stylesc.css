@@ -1,172 +1,224 @@
 /* ====================================================
-   FILE STYLESC.CSS
-   Edition: NAVY WATERFALL (ANTI-LAG & FULL COVER)
-   Status: FIXED (Super Smooth Scroll, Full Card Image)
-   Color Theme: Navy Blue (Baju) & Denim (Celana)
+   FILE: STYLESC.CSS
+   Edition: VIDEO LABEL TOP-LEFT (FIXED)
+   Status: FINAL (Clean, No-Clutter)
    ==================================================== */
 
-/* 1. GRID SYSTEM (ANTI-LAG) */
-#scriptList.script-grid-view {
-    display: grid !important;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 20px;
-    padding: 10px 0 40px 0; 
-    margin: 0;
+/* --- 1. LAYOUT GRID SYSTEM --- */
+#scriptList {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
     width: 100%;
-    overflow-x: visible !important;
-    overflow-y: visible !important;
-    white-space: normal !important;
-    transform: none !important;
-    contain: layout paint style; 
+    margin: 0 auto;
 }
 
-/* 2. CARD STYLING (SOLID NAVY - NO BLUR - LIGHTWEIGHT) */
-#scriptList.script-grid-view .script-card {
-    width: 100% !important;
-    min-width: 0 !important;
-    margin: 0 !important;
-    height: auto !important; /* Biar manjang ke bawah sesuai konten */
-    
-    scroll-snap-align: none;
-    flex: none !important; 
+@media (min-width: 768px) {
+    #scriptList {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2rem;
+    }
+}
+
+/* --- 2. CARD DESIGN --- */
+.shiroko-card {
+    background-color: transparent;
+    border: 1px solid rgba(51, 65, 85, 0.5);
+    border-radius: 1rem;
+    overflow: hidden;
+    position: relative;
     display: flex;
     flex-direction: column;
-
-    /* Transisi standar (Tanpa blur transition) */
-    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
-    
-    /* Hardware Acceleration */
-    transform: translate3d(0, 0, 0); 
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    height: 100%;
+    width: 100%;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+    transform: translateZ(0); 
     backface-visibility: hidden;
-    will-change: transform, opacity;
-    
-    /* BACKGROUND: SOLID NAVY TRANSPARAN (Tanpa Blur) */
-    background: rgba(15, 23, 42, 0.9) !important; 
-    backdrop-filter: none; /* MEMBUAT SCROLL RINGAN */
-    -webkit-backdrop-filter: none;
-    
-    /* BORDER */
-    border: 1px solid rgba(148, 163, 184, 0.2);
-    border-bottom: 4px solid #020617; 
-    border-radius: 1.25rem;
-    overflow: hidden;
-    
-    position: relative;
-    z-index: 1; 
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4);
 }
 
-#scriptList.script-grid-view .script-card:hover {
-    transform: translateY(-5px) translate3d(0, 0, 0);
-    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.6); 
-    border-color: #60a5fa; 
-    z-index: 10; 
+.shiroko-card:hover {
+    transform: translateY(-3px);
+    border-color: #60a5fa;
 }
 
-/* 3. THUMBNAIL (FULL COVER) */
-#scriptList.script-grid-view .thumb-container {
+/* --- 3. THUMBNAIL AREA --- */
+.shiroko-thumb {
     position: relative;
     width: 100%;
-    padding-top: 56.25%; /* Rasio 16:9 */
-    height: 0; 
+    aspect-ratio: 16/9;
+    background-color: #0f172a;
     overflow: hidden;
-    background: #020617; 
-    border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    cursor: pointer;
 }
 
-#scriptList.script-grid-view .thumb-container img {
-    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-    object-fit: cover; /* FULL MEMENUHI KOTAK */
-    object-position: center;
-    transition: transform 0.5s ease;
+.shiroko-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.4s ease;
 }
 
-#scriptList.script-grid-view .script-card:hover .thumb-container img { 
-    transform: scale(1.05); 
+.shiroko-card:hover .shiroko-thumb img {
+    transform: scale(1.03);
 }
 
-/* 4. SCROLL REVEAL ANIMATION (EFEK AIR TERJUN CSS) */
-.reveal-on-scroll {
+/* OVERLAY PLAY ICON (Tengah) */
+.thumb-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.3); /* Gelap sedikit agar tulisan terbaca */
+    display: flex;
+    align-items: center;
+    justify-content: center;
     opacity: 0;
-    transform: translateY(50px); /* Mulai dari bawah */
-    /* Transisi delay diatur via JS */
-    transition: opacity 0.6s ease-out, transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1);
+    transition: opacity 0.2s ease;
+    z-index: 20;
+}
+.shiroko-thumb:hover .thumb-overlay { opacity: 1; }
+
+/* --- BARU: LABEL VIDEO POJOK KIRI ATAS --- */
+.video-hint-badge {
+    position: absolute;
+    top: 10px;          /* Jarak dari atas */
+    left: 10px;         /* Jarak dari kiri */
+    background: rgba(0, 0, 0, 0.7); /* Background gelap transparan */
+    color: #f8fafc;
+    font-size: 0.55rem; /* Ukuran font kecil rapi */
+    font-weight: 700;
+    text-transform: uppercase;
+    padding: 4px 8px;
+    border-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    z-index: 25;        /* Di atas gambar */
+    pointer-events: none; /* Agar klik tembus ke gambar */
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    letter-spacing: 0.5px;
 }
 
-.reveal-on-scroll.is-visible {
-    opacity: 1;
-    transform: translateY(0);
+/* Iframe Video */
+.video-frame {
+    width: 100%; height: 100%; border: none; position: absolute; top: 0; left: 0; z-index: 30;
 }
 
-/* 5. COMPONENTS LAIN */
-.sc-page-title {
-    font-family: 'Press Start 2P', cursive;
-    color: #60a5fa; 
-    text-align: center;
-    margin-bottom: 30px;
-    font-size: 12px;
-    line-height: 1.8;
-    text-shadow: 2px 2px 0px #1e293b; 
-    animation: smooth-appear 0.5s backwards;
+/* Tombol Stop */
+.stop-video-btn {
+    position: absolute; top: 10px; right: 10px;
+    background: #ef4444; color: white; border: none;
+    border-radius: 6px; padding: 6px 12px;
+    font-size: 10px; font-weight: 800; text-transform: uppercase;
+    cursor: pointer; z-index: 40; box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+    display: flex; align-items: center; gap: 5px;
 }
 
-.sc-search-wrapper {
-    max-width: 700px; margin: 0 auto 40px auto;
-    position: relative; z-index: 50 !important; isolation: isolate;
-    display: flex; gap: 12px; align-items: stretch; 
+/* --- 4. CARD BODY --- */
+.shiroko-body {
+    padding: 1.5rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    background: rgba(15, 23, 42, 0.95); 
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
 
-#btn-toggle-filter {
-    background: #0f172a; border: 1px solid rgba(148, 163, 184, 0.2);
-    border-radius: 16px; transition: all 0.2s ease; height: 54px; width: 60px;
-    display: flex; align-items: center; justify-content: center; cursor: pointer;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.3); pointer-events: auto; 
-    position: relative; z-index: 10002; color: #94a3b8; 
-}
-#btn-toggle-filter:active, #btn-toggle-filter:hover { border-color: #60a5fa; color: #60a5fa; }
-
-#filter-dropdown {
-    background: #0f172a; border: 1px solid #334155;
-    box-shadow: 0 10px 40px rgba(0,0,0,0.9); transform-origin: top left;
-    border-radius: 16px; overflow: hidden; margin-top: 8px;
-    position: absolute; top: 100%; left: 0; width: 220px; 
-    z-index: 10005 !important; pointer-events: auto; 
-}
-#filter-dropdown button { position: relative; z-index: 10006; }
-
-.sc-search-wrapper .absolute {
-    position: absolute; left: 86px; top: 50%; transform: translateY(-50%);
-    z-index: 10001; pointer-events: none; color: #475569; font-size: 14px;
+.card-header {
+    display: flex; justify-content: space-between; align-items: flex-start;
+    margin-bottom: 0.75rem; gap: 12px;
 }
 
-#scriptSearch {
-    flex: 1; height: 54px; border-radius: 16px;
-    padding-left: 45px; padding-right: 20px;
-    background: #0f172a; border: 1px solid rgba(148, 163, 184, 0.2);
-    color: #f8fafc; font-size: 14px; outline: none;
-    transition: border-color 0.2s ease; box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-    position: relative; z-index: 10000;
+.card-title {
+    font-size: 1.1rem; font-weight: 800; color: #f8fafc; line-height: 1.4; margin: 0;
+    display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
 }
-#scriptSearch:focus { border-color: #60a5fa; background: #1e293b; }
-#scriptSearch::placeholder { color: #475569; }
 
-#scrollDots { display: none !important; }
+.version-badge {
+    background: #0f172a; color: #94a3b8; font-size: 0.65rem; padding: 4px 8px;
+    border-radius: 6px; font-family: 'Fira Code', monospace;
+    border: 1px solid #334155; white-space: nowrap; flex-shrink: 0;
+}
 
-/* Skeleton (Solid Navy) */
-#scriptList.script-grid-view .skeleton-card {
-    width: 100%; height: 360px; border-radius: 1.25rem;
-    background: #1e293b; position: relative; overflow: hidden;
+.card-desc {
+    font-size: 0.85rem; color: #cbd5e1; line-height: 1.6;
+    margin-bottom: 1.25rem;
+    display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
 }
-#scriptList.script-grid-view .skeleton-card::after {
-    content: ""; position: absolute; inset: 0; transform: translateX(-100%);
-    background: linear-gradient(90deg, transparent, rgba(96, 165, 250, 0.05), transparent);
-    animation: loadingShimmer 1.5s infinite;
-}
-@keyframes loadingShimmer { 100% { transform: translateX(100%); } }
 
-@media (max-width: 640px) {
-    #scriptList.script-grid-view { grid-template-columns: 1fr; gap: 20px; padding-bottom: 20px; }
-    .sc-page-title { font-size: 11px; margin-bottom: 20px; }
-    .sc-search-wrapper { margin-bottom: 25px; }
-    .sc-search-wrapper .absolute { left: 82px; }
+.card-info-row {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 1rem; padding-bottom: 0.75rem;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
 }
+.card-date, .card-rating {
+    font-size: 0.75rem; color: #94a3b8; font-weight: 600;
+    display: flex; align-items: center; gap: 6px;
+}
+
+.card-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 1.5rem; }
+.tag-pill {
+    background: #1e293b; color: #60a5fa;
+    font-size: 0.65rem; padding: 4px 10px; border-radius: 99px; font-weight: 700;
+    border: 1px solid #334155; text-transform: uppercase;
+}
+
+.card-stats {
+    display: flex; align-items: center; justify-content: space-between;
+    padding-top: 0.75rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    margin-bottom: 1.25rem;
+    font-size: 0.75rem; color: #94a3b8;
+}
+.stat-item { display: flex; align-items: center; gap: 6px; font-weight: 700; }
+.text-blue { color: #60a5fa; }
+.text-view { color: #facc15; } 
+.text-green { color: #34d399; }
+
+/* Buttons */
+.card-actions { display: flex; gap: 12px; margin-top: auto; }
+.btn-dl {
+    flex: 2; background: #2563eb;
+    color: white; height: 44px; border-radius: 12px;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.5px;
+    cursor: pointer; transition: background 0.2s;
+    border: 1px solid rgba(255,255,255,0.1);
+}
+.btn-dl:hover { background: #1d4ed8; }
+
+.btn-share, .btn-icon {
+    width: 44px; height: 44px; background: #0f172a;
+    border-radius: 12px; display: flex; align-items: center; justify-content: center;
+    font-size: 1.1rem; cursor: pointer; transition: background 0.2s;
+    border: 1px solid #334155; color: #94a3b8; flex-shrink: 0;
+}
+.btn-share:hover, .btn-icon:hover { background: #1e293b; color: white; border-color: #60a5fa; }
+
+/* Badges Kanan Atas (Status) */
+.status-badge {
+    position: absolute; top: 12px; right: 12px;
+    padding: 4px 8px; border-radius: 6px;
+    font-size: 0.65rem; font-weight: 800; text-transform: uppercase;
+    color: white; z-index: 10;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+    background: rgba(0,0,0,0.6); border: 1px solid rgba(255,255,255,0.2);
+}
+.badge-new { background-color: #2563eb; }
+.badge-update { background-color: #059669; }
+
+/* Load More */
+.load-more-btn {
+    width: 100%; padding: 15px; background: #1e293b;
+    border: 1px solid #334155; border-radius: 16px; 
+    color: #60a5fa; font-weight: 800; text-transform: uppercase;
+    letter-spacing: 1px; font-size: 11px; margin-top: 20px; cursor: pointer;
+    transition: all 0.2s ease; display: flex; align-items: center; justify-content: center; gap: 10px;
+}
+.load-more-btn:hover { background: #334155; border-color: #60a5fa; }
+
+/* Animation */
+.animate-fade-in { animation: fadeIn 0.4s ease-out backwards; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+.hide-scrollbar::-webkit-scrollbar { display: none; }

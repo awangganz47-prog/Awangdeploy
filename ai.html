@@ -7,7 +7,7 @@
     <title>Chat AI - AwangXoffc ID</title>
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.7.0/styles/atom-one-dark.min.css">
@@ -23,7 +23,6 @@
 
     <div id="customBg" class="main-bg-fixed"></div>
     <div class="main-bg-overlay"></div>
-
     <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
 
     <aside id="sidebar">
@@ -32,20 +31,23 @@
                 <i class="fas fa-plus"></i> Chat Baru
             </button>
         </div>
-        <div class="flex-1 overflow-y-auto custom-scrollbar p-4">
-            <h3 class="text-[10px] text-[#94a3b8] font-bold uppercase tracking-widest mb-3 px-2">Riwayat Chat</h3>
-            <div id="historyList" class="flex flex-col gap-2"></div>
+        
+        <div class="flex-1 overflow-y-auto custom-scrollbar p-4 flex flex-col">
+            <h3 class="text-[10px] text-[#94a3b8] font-bold uppercase tracking-widest mb-3 px-2">Riwayat Sesi</h3>
+            <div id="historyList" class="flex flex-col gap-2 pb-4"></div>
         </div>
+
         <div class="p-4 border-t border-[#1e293b] bg-[#020617]">
-            <button onclick="clearAllHistory()" class="w-full py-3 text-[#ef4444] hover:bg-[#ef4444]/10 rounded-xl font-bold text-[10px] uppercase transition-colors flex items-center justify-center gap-2 border border-[#ef4444]/20">
+            <button onclick="clearAllHistory()" class="w-full py-3 mb-4 text-[#ef4444] hover:bg-[#ef4444]/10 rounded-xl font-bold text-[10px] uppercase transition-colors flex items-center justify-center gap-2 border border-[#ef4444]/20">
                 <i class="fas fa-trash-alt"></i> Hapus Semua
             </button>
-            <div class="mt-4 flex items-center gap-3 px-2">
-                <img src="" id="sidebarAvatar" class="w-8 h-8 rounded-full border border-[#60a5fa]">
+            
+            <div class="flex items-center gap-3 px-2">
+                <img src="" id="sidebarAvatar" class="w-8 h-8 rounded-full border border-[#60a5fa] object-cover">
                 <div class="flex-1 min-w-0">
                     <div class="text-[10px] text-white font-bold truncate">Awang Official</div>
                 </div>
-                <a href="index.html" class="text-[#94a3b8] hover:text-white"><i class="fas fa-home"></i></a>
+                <a href="index.html" class="text-[#94a3b8] hover:text-white transition-colors"><i class="fas fa-home"></i></a>
             </div>
         </div>
     </aside>
@@ -58,23 +60,39 @@
                     <i class="fas fa-bars"></i>
                 </button>
                 <div class="flex flex-col">
-                    <span class="text-[#f8fafc] font-black text-sm tracking-wide" id="aiNameDisplay">AI CHAT</span>
-                    <span class="text-[#60a5fa] text-[9px] font-bold uppercase flex items-center gap-1">
-                        <span class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse"></span> Online
+                    <div class="flex items-center gap-2">
+                        <span class="text-[#f8fafc] font-black text-sm tracking-wide" id="aiNameDisplay">AI CHAT</span>
+                        <span class="bg-[#1e3a8a] text-[#60a5fa] text-[8px] px-1.5 py-0.5 rounded-md font-bold border border-[#60a5fa]/30">LLAMA 3</span>
+                    </div>
+                    <span class="text-[#94a3b8] text-[9px] font-bold uppercase flex items-center gap-1.5 mt-0.5">
+                        <span id="statusDot" class="w-1.5 h-1.5 rounded-full bg-gray-500"></span> 
+                        <span id="statusText">CONNECTING...</span>
                     </span>
                 </div>
             </div>
-            <button onclick="clearCurrentChat()" class="nav-btn text-red-400 border-red-900/30">
+
+            <button onclick="clearCurrentChat()" class="nav-btn text-red-400 border-red-900/30 hover:bg-red-900/20" title="Reset Sesi Ini">
                 <i class="fas fa-eraser"></i>
             </button>
         </header>
 
-        <div id="chatBox" class="chat-area custom-scrollbar">
-            <div class="flex flex-col items-center justify-center h-full opacity-60" id="emptyState">
-                <div class="w-20 h-20 bg-[#1e293b]/50 backdrop-blur-md rounded-3xl flex items-center justify-center mb-4 border border-[#334155]">
-                    <i class="fas fa-robot text-4xl text-[#60a5fa] animate-pulse"></i>
+        <div id="chatBox" class="chat-area custom-scrollbar relative">
+            <div class="flex flex-col items-center justify-center h-full w-full px-6" id="emptyState">
+                <div class="mb-6 filter drop-shadow-[0_0_15px_rgba(96,165,250,0.4)]">
+                    <i class="fas fa-robot text-6xl text-[#60a5fa] animate-bounce"></i>
                 </div>
-                <p class="text-[#f8fafc] text-xs font-black uppercase tracking-widest">Apa yang bisa saya bantu?</p>
+                <h2 class="text-[#f8fafc] text-lg font-black uppercase tracking-[0.1em] mb-3 text-center drop-shadow-lg">
+                    APA YANG BISA SAYA BANTU?
+                </h2>
+                <div class="bg-[#0f172a]/80 border border-[#334155] p-4 rounded-2xl max-w-xs text-center backdrop-blur-sm">
+                    <p class="text-[#94a3b8] text-[11px] leading-relaxed font-medium">
+                        Saya siap membantu membuat coding, mencari ide konten, analisis data, atau sekadar teman curhat. Silakan ketik perintah Anda di kolom bawah.
+                    </p>
+                </div>
+                <div class="mt-8 flex items-center gap-2 px-3 py-1 rounded-full bg-[#60a5fa]/10 border border-[#60a5fa]/20">
+                    <i class="fas fa-bolt text-[#60a5fa] text-[10px]"></i>
+                    <span class="text-[9px] text-[#60a5fa] font-bold uppercase">Super Fast Engine V2</span>
+                </div>
             </div>
             
             <div id="aiTyping" class="message ai hidden">
@@ -86,16 +104,18 @@
         </div>
 
         <div class="input-area-wrapper">
-            <div id="replyPreview" class="hidden mb-3 p-3 bg-[#0f172a] border-l-4 border-[#60a5fa] rounded-r-lg flex justify-between items-center shadow-lg animate-fade-in-up">
-                <div class="overflow-hidden">
-                    <div class="text-[9px] text-[#60a5fa] font-black uppercase tracking-wider mb-1" id="replyToName">MEMBALAS</div>
-                    <div class="text-[11px] text-white font-medium truncate" id="replyText">...</div>
+            <div id="replyPreview" class="hidden mb-2 p-3 bg-[#1e293b]/90 border-l-4 border-[#60a5fa] rounded-lg flex justify-between items-center shadow-lg backdrop-blur-sm animate-fade-in-up">
+                <div class="overflow-hidden pr-2">
+                    <div class="text-[9px] text-[#60a5fa] font-black uppercase tracking-wider mb-0.5" id="replyToName">Membalas...</div>
+                    <div class="text-[10px] text-gray-300 font-medium truncate" id="replyText">Isi pesan...</div>
                 </div>
-                <button onclick="cancelReply()" class="text-white/50 hover:text-white px-2"><i class="fas fa-times"></i></button>
+                <button onclick="cancelReply()" class="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center text-white/70 hover:text-white hover:bg-red-500/20 hover:text-red-400 transition-colors">
+                    <i class="fas fa-times text-[10px]"></i>
+                </button>
             </div>
 
             <div class="input-box-container">
-                <textarea id="userPrompt" rows="1" placeholder="Ketik pesan..." oninput="autoResize(this)"></textarea>
+                <textarea id="userPrompt" rows="1" placeholder="Ketik pesan di sini..." oninput="autoResize(this)"></textarea>
                 <button id="sendBtn" onclick="sendMessage()">
                     <i class="fas fa-paper-plane"></i>
                 </button>
@@ -105,12 +125,9 @@
     </div>
 
     <script src="utils.js"></script>
-    
-    <script src="script_ai.js?v=1000"></script>
-    
-    
+    <script src="script_ai.js?v=FINAL_EDIT_REPLY"></script>
+
     <script>
-        // Init UI
         document.getElementById('sidebarAvatar').src = CONFIG.profilePic;
         document.getElementById('aiNameDisplay').innerText = CONFIG.aiSystem.aiName;
         const customBg = document.getElementById('customBg');

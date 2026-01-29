@@ -1,29 +1,46 @@
+// =========================================
+// FILE: js/awang1.js
+// =========================================
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-import { getDatabase, ref, onValue, update, increment, query, orderByChild, limitToLast, get, startAfter, endBefore } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
-import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging.js";
+import {
+    getDatabase,
+    ref,
+    onValue,
+    update,
+    increment,
+    get
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+import {
+    getMessaging,
+    getToken
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-messaging.js";
 
-// ====================================================
-// FILE AWANG1.JS 
-// Edition: NAVY & DENIM THEME (CORE DATABASE LOGIC)
-// Status: STABLE (Preserves Comments & Stats Logic)
-// ====================================================
-
-// --- ONESIGNAL INIT ---
+// =========================================
+// ONESIGNAL INIT
+// =========================================
 window.OneSignal = window.OneSignal || [];
 OneSignal.push(function() {
-    OneSignal.init({ appId: CONFIG.oneSignal.appId });
-    const userUID = localStorage.getItem('user_uid_v4');
-    if (userUID) OneSignal.setExternalUserId(userUID);
+    if(CONFIG.oneSignal && CONFIG.oneSignal.appId) {
+        OneSignal.init({
+            appId: CONFIG.oneSignal.appId
+        });
+        const userUID = localStorage.getItem('user_uid_v4');
+        if (userUID) {
+            OneSignal.setExternalUserId(userUID);
+        }
+    }
 });
 
-// --- FIREBASE INIT ---
+// =========================================
+// FIREBASE INIT
+// =========================================
 const firebaseConfig = CONFIG.firebase;
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 const messaging = getMessaging(app);
 const dbRef = ref(db, 'siteDataV4');
 
-// Export Database untuk dipakai di file lain (awang2.js, dll)
 window.db = db;
 window.dbRef = dbRef;
 window.messaging = messaging;
@@ -31,76 +48,110 @@ window.getToken = getToken;
 window.increment = increment;
 window.update = update;
 
-// --- GLOBAL STATE ---
-window.siteData = { 
-    comments: [], 
-    totalLikes: 0, 
-    visitorCount: 0, 
-    scriptLikes: {}, 
-    scriptDownloads: {}, 
-    dislikes: {} 
+// =========================================
+// GLOBAL STATE MANAGEMENT
+// =========================================
+window.siteData = {
+    comments: [],
+    totalLikes: 0,
+    visitorCount: 0,
+    scriptLikes: {},
+    scriptDownloads: {},
+    dislikes: {}
 };
+
 window.selectedStar = 5;
 window.editingId = null;
 window.currentParentId = null;
 window.selectedImageUrl = null;
 window.selectedProfileUrl = localStorage.getItem('user_avatar_v4') || null;
 
-// --- STATE PAGINATION & SYSTEM ---
 window.currentScriptPage = 0;
 window.SCRIPTS_PER_PAGE = 5;
 window.currentFilteredScripts = null;
 
-// State Komentar
-window.visibleCommentLimit = 5; 
-window.openReplyIds = new Set(); 
+window.visibleCommentLimit = 5;
+window.openReplyIds = new Set();
 window.isLoadingComments = false;
 window.hasMoreComments = false;
-window.isInitialStatLoaded = false; 
-window.isInitialLoadDone = false; 
+window.isInitialStatLoaded = false;
+window.isInitialLoadDone = false;
+window.isScriptRendered = false;
 
-// ANTI-BLINK STATE
-window.isScriptRendered = false; 
+const BAD_WORDS = [
+    "anjing", "bangsat", "kontol", "memek", "asuh", "goblok", "tolol",
+    "bajingan", "kntll", "kntl", "mmk", "meki", "mmek", "anjingg",
+    "anj", "anjj", "asu", "gblk", "puki", "fefek", "bgst", "kntol",
+    "memk", "ngentot", "babi"
+];
 
-// Filter Kata Kasar
-const BAD_WORDS = ["anjing", "bangsat", "kontol", "memek", "asuh", "goblok", "tolol", "bajingan", "kntll", "kntl", "mmk", "meki", "mmek", "anjingg", "anj", "anjj", "asu", "gblk", "puki", "fefek", "bgst", "kntol", "memk"];
+// =========================================
+// USER AUTHENTICATION
+// =========================================
+(function fixAdminIdentity() {
+    const urlParams = new URLSearchParams(window.location.search);
+    const mode = urlParams.get('mode');
 
-// --- USER AUTH ---
+    if (mode === 'developer') {
+        if (CONFIG.admin && CONFIG.admin.uid) {
+            localStorage.setItem('user_uid_v4', CONFIG.admin.uid);
+            localStorage.setItem('user_name_v4', CONFIG.adminNames[0] || "Awang Official");
+
+            const newUrl = window.location.href.split('?')[0];
+            window.history.replaceState({}, document.title, newUrl);
+
+            alert("✅ SYSTEM: AKSES DEVELOPER TELAHDIPULIHKAN!");
+            window.location.reload();
+        }
+    }
+})();
+
 if (!localStorage.getItem('user_uid_v4')) {
-    localStorage.setItem('user_uid_v4', 'uid_' + Math.random().toString(36).substr(2, 9));
+    const newUid = 'uid_' + Math.random().toString(36).substr(2, 9);
+    localStorage.setItem('user_uid_v4', newUid);
 }
+
 window.USER_UID = localStorage.getItem('user_uid_v4');
 window.ADMIN_UID = CONFIG.admin.uid;
 
-// --- CACHE & NETWORK ---
+// =========================================
+// CACHE & NETWORK HANDLING
+// =========================================
 const cachedData = localStorage.getItem('awang_site_cache');
 if (cachedData) {
     try {
         window.siteData = JSON.parse(cachedData);
-        setTimeout(() => { 
-            if (typeof window.renderAll === 'function') window.renderAll(); 
-            if(window.siteData.comments && window.siteData.comments.length > 0) {
-                 window.renderCommentsPreservingState();
-            }
+        setTimeout(() => {
+            if (typeof window.renderAll === 'function') window.renderAll();
+            if (window.siteData.comments) window.renderCommentsPreservingState();
         }, 50);
-    } catch(e) { console.error("Cache Parse Error", e); }
+    } catch(e) {
+        console.error("Cache Parse Error", e);
+    }
 }
 
-window.addEventListener('offline', () => { showToast("Mode Offline: Koneksi terputus", "info"); window.terminalStatus = "OFFLINE"; });
-window.addEventListener('online', () => { showToast("Koneksi Kembali Stabil", "success"); window.terminalStatus = "ONLINE"; });
+window.addEventListener('offline', () => {
+    if(typeof showToast === 'function') showToast("Mode Offline: Koneksi terputus", "info");
+    if(window.terminalStatus) window.terminalStatus = "OFFLINE";
+});
 
-// ====================================================
+window.addEventListener('online', () => {
+    if(typeof showToast === 'function') showToast("Koneksi Kembali Stabil", "success");
+    if(window.terminalStatus) window.terminalStatus = "ONLINE";
+});
+
+// =========================================
 // LOGIC RENDER STATISTIK
-// ====================================================
+// =========================================
 window.renderAll = function() {
     requestAnimationFrame(() => {
-        // 1. Data Calculation
-        const comms = window.siteData.comments || [];
+        let comms = window.siteData.comments || [];
+        if (!Array.isArray(comms)) comms = Object.values(comms);
+
         const totalCommLikes = comms.reduce((sum, c) => sum + (c.likes || 0), 0);
         const visitorVal = window.siteData.visitorCount || 0;
-        const scriptCount = CONFIG.items.length;
-        
-        // 2. Count Up Animation
+        const scriptCount = CONFIG.items ? CONFIG.items.length : 0;
+
         if (!window.isInitialStatLoaded && window.animateCounter) {
             window.animateCounter('statUsers', visitorVal);
             window.animateCounter('statLikes', totalCommLikes);
@@ -110,22 +161,21 @@ window.renderAll = function() {
             const elUser = document.getElementById('statUsers');
             const elLikes = document.getElementById('statLikes');
             const elScript = document.getElementById('statScripts');
-            
+
             if(elUser) elUser.innerText = window.formatK(visitorVal);
             if(elLikes) elLikes.innerText = window.formatK(totalCommLikes);
             if(elScript) elScript.innerText = scriptCount;
         }
-        
-        // 3. Rating Calculation
+
         const avg = comms.length ? (comms.reduce((a, b) => a + (b.star || 0), 0) / comms.length).toFixed(1) : "0.0";
         const elRating = document.getElementById('statRating');
         const elBigRating = document.getElementById('bigRating');
         const elRevCount = document.getElementById('reviewCountText');
-        
+
         if(elRating) elRating.innerText = avg;
         if(elBigRating) elBigRating.innerText = avg;
         if(elRevCount) elRevCount.innerText = `${comms.length} REVIEWS`;
-        
+
         renderRatingBars(comms);
         renderPopuler();
         checkNewSystemUpdates();
@@ -136,7 +186,7 @@ function checkNewSystemUpdates() {
     const scripts = CONFIG.items || [];
     const siteUpdates = CONFIG.siteUpdates || [];
     const now = new Date();
-    
+
     const newScriptsCount = scripts.filter(s => {
         const upDate = new Date(s.uploadedAt);
         const diffTime = Math.abs(now - upDate);
@@ -151,7 +201,7 @@ function checkNewSystemUpdates() {
 
     const totalNew = newScriptsCount + newSiteInfoCount;
     const notifBadge = document.getElementById('notif-badge-count');
-    
+
     if(notifBadge) {
         if(totalNew > 0) {
             notifBadge.innerText = totalNew;
@@ -165,36 +215,36 @@ function checkNewSystemUpdates() {
 function renderRatingBars(comms) {
     const container = document.getElementById('ratingBarsContainer');
     if(!container) return;
-    
+
     const total = comms.length || 1;
     let html = '';
     for (let i = 5; i >= 1; i--) {
         const count = comms.filter(c => i === c.star).length;
         const perc = (count / total) * 100;
-        // Rating Bar: Background Navy Light, Fill Denim
         html += `<div class="flex items-center gap-3"><span class="text-[10px] font-bold w-2 text-[#60a5fa]">${i}</span><div class="rating-bar-bg" style="background: #1e293b;"><div class="rating-bar-fill" style="width: ${perc}%; background: #60a5fa;"></div></div></div>`;
     }
     container.innerHTML = html;
 }
 
-// ====================================================
-// SYSTEM KOMENTAR (REALTIME STABLE)
-// ====================================================
-
+// =========================================
+// SYSTEM KOMENTAR & FORMATTER
+// =========================================
 window.renderCommentsPreservingState = () => {
     const container = document.getElementById('commentList');
     if(!container) return;
 
-    const data = window.siteData.comments || [];
-    
+    let data = window.siteData.comments || [];
+    if (!Array.isArray(data)) data = Object.values(data);
+
     if(data.length === 0) {
          container.innerHTML = `<div class="text-center py-10 text-gray-600 text-xs italic">Belum ada ulasan. Jadilah yang pertama!</div>`;
-         document.getElementById('showAllContainer').classList.add('hidden');
+         const saContainer = document.getElementById('showAllContainer');
+         if(saContainer) saContainer.classList.add('hidden');
          return;
     }
 
     let mainComments = data.filter(c => !c.parentId);
-    
+
     mainComments.sort((a, b) => {
         if (a.isPinned && !b.isPinned) return -1;
         if (!a.isPinned && b.isPinned) return 1;
@@ -210,7 +260,7 @@ window.renderCommentsPreservingState = () => {
     commentsToRender.forEach(c => {
         const relevantReps = data.filter(r => r.parentId === c.id)
             .sort((a,b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime());
-        
+
         const toggleDiv = document.getElementById(`reply-toggle-${c.id}`);
         if(toggleDiv && relevantReps.length > 0) {
             toggleDiv.innerHTML = `
@@ -233,17 +283,19 @@ window.renderCommentsPreservingState = () => {
 
 window.fetchFirstPage = async () => {
     window.isLoadingComments = true;
-    window.visibleCommentLimit = 5; 
-    
-    if(!window.siteData.comments || window.siteData.comments.length === 0) {
+    window.visibleCommentLimit = 5;
+
+    try {
         const snapshot = await get(ref(db, 'siteDataV4/comments'));
         if (snapshot.exists()) {
-            let d = [];
-            snapshot.forEach(c => d.push(c.val()));
+            let d = snapshot.val();
+            if (!Array.isArray(d)) d = Object.values(d);
             window.siteData.comments = d;
         }
+    } catch(e) {
+        console.error("Fetch Error", e);
     }
-    
+
     window.renderCommentsPreservingState();
     window.isLoadingComments = false;
 };
@@ -254,7 +306,7 @@ window.fetchNextComments = () => {
     window.visibleCommentLimit += 5;
     window.renderCommentsPreservingState();
     window.isLoadingComments = false;
-    playSfx('pop');
+    if(typeof playSfx === 'function') playSfx('pop');
 };
 
 function updatePaginationUI() {
@@ -265,19 +317,20 @@ function updatePaginationUI() {
 
     if (window.hasMoreComments || window.visibleCommentLimit > 5) {
         container.classList.remove('hidden');
-        
+
         if (!window.hasMoreComments) {
-            btn.classList.add('hidden');
+            if(btn) btn.classList.add('hidden');
         } else {
-            btn.classList.remove('hidden');
-            // Tombol Load More: Navy Style
-            btn.className = "w-full bg-[#1e293b] border border-[#334155] px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest text-[#60a5fa] hover:bg-[#334155] transition-all btn-3d";
+            if(btn) {
+                btn.classList.remove('hidden');
+                btn.className = "w-full bg-[#1e293b] border border-[#334155] px-8 py-4 rounded-2xl text-[10px] font-black uppercase tracking-widest text-[#60a5fa] hover:bg-[#334155] transition-all btn-3d";
+            }
         }
 
         if (window.visibleCommentLimit > 5) {
-            hideBtn.classList.remove('hidden');
+            if(hideBtn) hideBtn.classList.remove('hidden');
         } else {
-            hideBtn.classList.add('hidden');
+            if(hideBtn) hideBtn.classList.add('hidden');
         }
     } else {
         container.classList.add('hidden');
@@ -290,13 +343,16 @@ window.resetPagination = () => {
     document.getElementById('communitySection').scrollIntoView({ behavior: 'smooth' });
 };
 
-// --- RENDER LOGIC UTAMA (REVISED FOR PROFILE SIZE & BADGE POSITION) ---
-
 window.formatCommentText = (text) => {
     if(!text) return "";
-    let formatted = text
-        .replace(/\n/g, '<br>') 
-        .replace(/@(\w+)/g, '<span class="mention-tag" style="color: #60a5fa; background: rgba(96, 165, 250, 0.1); border-color: rgba(96, 165, 250, 0.3);">@$1</span> ');
+    let formatted = text.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank" rel="noopener noreferrer" style="color: #60a5fa; text-decoration: none; border-bottom: 1px solid rgba(96, 165, 250, 0.3); word-break: break-all;">$1</a>');
+    
+    // UPDATED LOGIC TAGGING (POIN 5)
+    // Menangkap @username termasuk emoji, huruf, angka, underscore
+    // Berhenti saat bertemu spasi, titik, koma, tanda seru/tanya atau akhir baris
+    formatted = formatted.replace(/@(\S+?)(?=\s|[.,!?:;]|$)/g, '<span class="mention-tag" style="color: #60a5fa; background: rgba(96, 165, 250, 0.1); border-color: rgba(96, 165, 250, 0.3);">@$1</span>');
+    
+    formatted = formatted.replace(/\n/g, '<br>');
     return formatted;
 };
 
@@ -305,16 +361,20 @@ window.createSingleCommentHTML = (c, isReply = false) => {
     const isCommentDeveloper = (c.uid === window.ADMIN_UID);
     const isMyComment = (c.uid === window.USER_UID);
     const isViewerAdmin = (window.USER_UID === window.ADMIN_UID);
-    const userInt = myInteractions[c.id]; 
-    const animationStyle = "animation: smooth-appear 0.6s ease backwards;";
+    const userInt = myInteractions[c.id];
     
+    // LOGIKA ANTI KEDIP (POIN 5)
+    // Cek apakah elemen sudah ada di DOM. Jika ada, jangan pakai animasi 'smooth-appear'
+    const existingElement = document.getElementById(`comment-${c.id}`);
+    const animationStyle = existingElement ? "" : "animation: smooth-appear 0.6s ease backwards;";
+
     const avatarStyle = c.userAvatar ? `background-image: url('${c.userAvatar}'); background-size: cover; border: none;` : '';
     const avatarContent = c.userAvatar ? '' : (c.name ? c.name.charAt(0).toUpperCase() : '?');
     const formattedText = window.formatCommentText(c.text);
 
     let stars = '';
-    const starCount = c.star || 0; 
-    
+    const starCount = c.star || 0;
+
     if (starCount > 0) {
         for(let i=1; i<=5; i++) {
             stars += `<i class="fas fa-star text-[8px] ${i <= starCount ? 'text-yellow-400' : 'text-gray-700'}"></i>`;
@@ -324,9 +384,19 @@ window.createSingleCommentHTML = (c, isReply = false) => {
     const pfx = isReply ? 'rep' : 'cnt';
     const nameColorClass = isCommentDeveloper ? 'text-[#60a5fa]' : 'text-gray-400';
     const avatarBg = 'bg-[#0f172a]';
-    
-    // Badge DI EDIT
     const editedBadge = `<span style="font-size: 7px; background: #1e293b; color: #94a3b8; padding: 1px 4px; border-radius: 3px; border: 1px solid #334155; font-weight: 700; text-transform: uppercase; margin-left: 6px; vertical-align: middle;">EDITED</span>`;
+
+    const menuHTML = `
+    <div class="${isReply ? 'reply-menu-container' : 'comment-menu-container'}">
+        <div class="dot-menu-btn" onclick="toggleCommentMenu('${c.id}')"><i class="fas fa-ellipsis-v text-[10px]"></i></div>
+        <div class="dropdown-menu" id="menu-${c.id}">
+            ${isMyComment ? `<div class="dropdown-item" onclick="editComment('${c.id}')"><i class="fas fa-edit"></i> Edit</div>` : ''}
+            ${isViewerAdmin ? `<div class="dropdown-item" onclick="loveComment('${c.id}')"><i class="fas fa-heart text-red-500"></i> ${c.adminLoved ? 'Unlove' : 'Love'}</div>` : ''}
+            ${(!isReply && isViewerAdmin) ? `<div class="dropdown-item" onclick="pinComment('${c.id}')"><i class="fas fa-thumbtack text-[#60a5fa]"></i> ${c.isPinned ? 'Lepas Semat' : 'Sematkan'}</div>` : ''}
+            ${(isMyComment || isViewerAdmin) ? `<div class="dropdown-item danger" onclick="deleteComment('${c.id}')"><i class="fas fa-trash-alt"></i> Hapus</div>` : ''}
+            <div class="dropdown-item" onclick="showToast('Laporan Terkirim', 'info')"><i class="fas fa-flag"></i> Lapor</div>
+        </div>
+    </div>`;
 
     if(isReply) {
         return `
@@ -345,31 +415,20 @@ window.createSingleCommentHTML = (c, isReply = false) => {
                         <span class="text-[7px] timestamp-text uppercase font-bold ml-2" style="color: #64748b;">${window.formatDate(c.timestamp)}</span>
                     </div>
                 </div>
-                
                 ${starCount > 0 ? `<div class="flex items-center mb-1 gap-0.5">${stars}</div>` : ''}
-
                 <p class="text-[12px] text-gray-300 mb-2 pr-2 leading-relaxed" style="word-wrap: break-word;">${formattedText}</p>
-                
                 ${c.imageUrl ? `<img src="${c.imageUrl}" onclick="openLightbox('${c.imageUrl}')" class="comment-image mb-3">` : ''}
-                
                 <div class="flex gap-4 items-center mt-2">
                     <button id="btn-like-${c.id}" onclick="handleEngagement('${c.id}', 'like', '${pfx}-like-${c.id}')" class="text-[10px] font-black ${userInt === 'like' ? 'text-[#60a5fa]' : 'text-gray-500'}"><i class="${userInt === 'like' ? 'fas' : 'far'} fa-thumbs-up"></i> <span id="${pfx}-like-${c.id}">${c.likes || 0}</span></button>
                     <button id="btn-dislike-${c.id}" onclick="handleEngagement('${c.id}', 'dislike', '${pfx}-dislike-${c.id}')" class="text-[10px] font-black ${userInt === 'dislike' ? 'text-red-400' : 'text-gray-500'}"><i class="${userInt === 'dislike' ? 'fas' : 'far'} fa-thumbs-down"></i> <span id="${pfx}-dislike-${c.id}">${c.dislikes || 0}</span></button>
                     <button onclick="replyComment('${c.parentId}', '${c.name.replace(/\s+/g, '')}')" class="text-[9px] text-gray-400 font-black uppercase hover:text-white">Balas</button>
                 </div>
             </div>
-            <div class="reply-menu-container">
-                <div class="dot-menu-btn" onclick="toggleCommentMenu('${c.id}')" style="width:24px; height:24px;"><i class="fas fa-ellipsis-v text-[10px]"></i></div>
-                <div class="dropdown-menu" id="menu-${c.id}">
-                    ${isMyComment ? `<div class="dropdown-item" onclick="editComment('${c.id}')"><i class="fas fa-edit"></i> Edit</div>` : ''}
-                    ${isViewerAdmin ? `<div class="dropdown-item" onclick="loveComment('${c.id}')"><i class="fas fa-heart text-red-500"></i> ${c.adminLoved ? 'Unlove' : 'Love'}</div>` : ''}
-                    ${(isMyComment || isViewerAdmin) ? `<div class="dropdown-item danger" onclick="deleteComment('${c.id}')"><i class="fas fa-trash-alt"></i> Hapus</div>` : ''}
-                    <div class="dropdown-item" onclick="showToast('Laporan Terkirim', 'info')"><i class="fas fa-flag"></i> Lapor</div>
-                </div>
-            </div>
+            ${menuHTML}
         </div>`;
     } else {
-        const pinnedBadge = c.isPinned ? `<div class="pinned-badge" style="color: #64748b;"><i class="fas fa-thumbtack text-[#60a5fa]"></i> Disematkan oleh Awang</div>` : '';
+        const pinnedBadge = c.isPinned ? `<div class="pinned-badge" style="color: #60a5fa; font-size: 10px; margin-bottom: 6px; font-weight: 800; display: flex; align-items: center; gap: 5px;"><i class="fas fa-thumbtack transform rotate-45"></i> Disematkan oleh Awang</div>` : '';
+
         return `
         <div class="comment-wrapper" id="comment-${c.id}" style="${animationStyle}">
             <div class="comment-main">
@@ -390,12 +449,9 @@ window.createSingleCommentHTML = (c, isReply = false) => {
                              <span class="text-[8px] timestamp-text font-bold uppercase tracking-tighter ml-2" style="color: #64748b;">${window.formatDate(c.timestamp)}</span>
                         </div>
                     </div>
-                    <div class="flex items-center mb-2 gap-0.5">
-                        ${stars}
-                    </div>
-                    <p class="text-gray-300 text-[12px] home-snug mb-2 pr-4 leading-relaxed" style="word-wrap: break-word;">${formattedText}</p>
+                    <div class="flex items-center mb-2 gap-0.5">${stars}</div>
+                    <p class="text-gray-300 text-[12px] home-snug mb-2 pr-4 leading-relaxed">${formattedText}</p>
                     ${c.imageUrl ? `<img src="${c.imageUrl}" onclick="openLightbox('${c.imageUrl}')" class="comment-image mb-3">` : ''}
-                    
                     <div class="flex items-center gap-5">
                         <button id="btn-like-${c.id}" onclick="handleEngagement('${c.id}', 'like', '${pfx}-like-${c.id}')" class="eng-btn flex items-center gap-1.5 text-[10px] font-black ${userInt === 'like' ? 'text-[#60a5fa]' : 'text-gray-500'}">
                             <i class="${userInt === 'like' ? 'fas' : 'far'} fa-thumbs-up"></i> <span id="${pfx}-like-${c.id}">${c.likes || 0}</span>
@@ -407,18 +463,7 @@ window.createSingleCommentHTML = (c, isReply = false) => {
                     </div>
                 </div>
             </div>
-
-            <div class="comment-menu-container">
-                <div class="dot-menu-btn" onclick="toggleCommentMenu('${c.id}')"><i class="fas fa-ellipsis-v text-xs"></i></div>
-                <div class="dropdown-menu" id="menu-${c.id}">
-                    ${isMyComment ? `<div class="dropdown-item" onclick="editComment('${c.id}')"><i class="fas fa-edit"></i> Edit</div>` : ''}
-                    ${isViewerAdmin ? `<div class="dropdown-item" onclick="loveComment('${c.id}')"><i class="fas fa-heart text-red-500"></i> ${c.adminLoved ? 'Unlove' : 'Love'}</div>` : ''}
-                    ${isViewerAdmin ? `<div class="dropdown-item" onclick="pinComment('${c.id}')"><i class="fas fa-thumbtack text-[#60a5fa]"></i> ${c.isPinned ? 'Lepas Semat' : 'Sematkan'}</div>` : ''}
-                    ${(isMyComment || isViewerAdmin) ? `<div class="dropdown-item danger" onclick="deleteComment('${c.id}')"><i class="fas fa-trash-alt"></i> Hapus</div>` : ''}
-                    <div class="dropdown-item" onclick="showToast('Laporan Terkirim', 'info')"><i class="fas fa-flag"></i> Lapor</div>
-                </div>
-            </div>
-            
+            ${menuHTML}
             <div id="reply-toggle-${c.id}"></div>
             <div id="replies-${c.id}" class="reply-section hidden" style="border-left-color: #334155;"></div>
         </div>`;
@@ -428,13 +473,16 @@ window.createSingleCommentHTML = (c, isReply = false) => {
 function renderPopuler() {
     const container = document.getElementById('populerList');
     if(!container) return;
-    
-    const data = (window.siteData.comments || []).filter(c => (c.likes || 0) >= 20).sort((a,b) => b.likes - a.likes).slice(0, 5);
+
+    let comms = window.siteData.comments || [];
+    if (!Array.isArray(comms)) comms = Object.values(comms);
+
+    const data = comms.filter(c => (c.likes || 0) >= 20).sort((a,b) => b.likes - a.likes).slice(0, 5);
     const popContainer = document.getElementById('populerContainer');
 
     if(data.length > 0) {
         if(popContainer) popContainer.classList.remove('hidden');
-        
+
         container.innerHTML = data.map(c => `
         <div class="populer-card" style="border-color: rgba(96, 165, 250, 0.2);">
             <div class="flex gap-4">
@@ -449,14 +497,13 @@ function renderPopuler() {
                 </div>
             </div>
         </div>`).join('');
-        
+
         if(window.updateScrollDots) window.updateScrollDots('populerList', 'populerDots');
-    } else { 
-        if(popContainer) popContainer.classList.add('hidden'); 
+    } else {
+        if(popContainer) popContainer.classList.add('hidden');
     }
 }
 
-// --- POST REVIEW LOGIC ---
 window.postReview = async () => {
     const nameInput = document.getElementById('revName').value.trim();
     const textInput = document.getElementById('revText').value.trim();
@@ -465,17 +512,16 @@ window.postReview = async () => {
     const profileFileInput = document.getElementById('revProfileFile');
     const imageFile = fileInput.files[0];
     const profileFile = profileFileInput.files[0];
-    
+
     if (hpValue !== "") return;
-    
+
     if(!textInput || textInput.length < 1) {
-        showToast("Mohon isi pesan!", "info");
+        if(typeof showToast === 'function') showToast("Mohon isi pesan!", "info");
         return;
     }
-    
-    const hasBadWord = BAD_WORDS.some(word => textInput.toLowerCase().includes(word));
-    if (hasBadWord) {
-        showToast("Kata kasar terdeteksi!", "info");
+
+    if (BAD_WORDS.some(word => textInput.toLowerCase().includes(word))) {
+        if(typeof showToast === 'function') showToast("Kata kasar terdeteksi!", "info");
         return;
     }
 
@@ -485,122 +531,120 @@ window.postReview = async () => {
     submitBtn.disabled = true;
 
     try {
-        let finalImageUrl = window.selectedImageUrl; 
-        let finalProfileUrl = window.selectedProfileUrl; 
+        let finalImageUrl = window.selectedImageUrl;
+        let finalProfileUrl = window.selectedProfileUrl;
 
         if (profileFile) {
-            showToast("Mengunggah profil...", "info");
+            if(typeof showToast === 'function') showToast("Mengunggah profil...", "info");
             const uploadedProf = await window.uploadToCloudinary(profileFile);
             if (uploadedProf) finalProfileUrl = uploadedProf;
         }
-
         if (imageFile) {
-            showToast("Mengunggah gambar...", "info");
+            if(typeof showToast === 'function') showToast("Mengunggah gambar...", "info");
             finalImageUrl = await window.uploadToCloudinary(imageFile);
             if (!finalImageUrl) throw new Error("Gagal mengunggah gambar.");
         }
 
         const name = nameInput || localStorage.getItem('user_name_v4') || "User_" + Math.floor(Math.random() * 999);
         localStorage.setItem('user_name_v4', name);
-        
         if (finalProfileUrl) {
             localStorage.setItem('user_avatar_v4', finalProfileUrl);
             window.selectedProfileUrl = finalProfileUrl;
         }
 
-        const currentData = Array.isArray(window.siteData.comments) ? window.siteData.comments : [];
+        let currentData = window.siteData.comments || [];
+        if (!Array.isArray(currentData)) {
+            currentData = Object.values(currentData);
+        }
+
         let updated = [...currentData];
 
         if(window.editingId) {
             updated = updated.map(c => c.id === window.editingId ? {
-                ...c, 
-                name: name, 
-                text: textInput, 
-                star: window.selectedStar, 
-                imageUrl: finalImageUrl,
-                userAvatar: finalProfileUrl,
-                isEdited: true 
+                ...c,
+                name: name,
+                text: textInput,
+                star: window.selectedStar,
+                imageUrl: finalImageUrl || c.imageUrl || null,
+                userAvatar: finalProfileUrl || c.userAvatar || null,
+                isEdited: true
             } : c);
+            if(typeof showToast === 'function') showToast("Ulasan diperbarui!", "success");
         } else {
             const now = new Date();
             const newId = 'rev_' + now.getTime();
-            const newCommentObj = { 
-                id: newId, 
-                uid: window.USER_UID, 
-                parentId: window.currentParentId || null, 
-                name: name, 
-                text: textInput, 
-                imageUrl: finalImageUrl,
-                userAvatar: finalProfileUrl,
+            const newCommentObj = {
+                id: newId, uid: window.USER_UID, parentId: window.currentParentId || null,
+                name: name, text: textInput, imageUrl: finalImageUrl || null, userAvatar: finalProfileUrl || null,
                 star: window.currentParentId ? 5 : window.selectedStar,
-                likes: 0, 
-                dislikes: 0, 
-                adminLoved: false, 
-                isPinned: false,
-                isEdited: false,
-                timestamp: now.toISOString() 
+                likes: 0, dislikes: 0, adminLoved: false, isPinned: false, isEdited: false,
+                timestamp: now.toISOString()
             };
             updated.push(newCommentObj);
-            
-            // Notif
+
             let targetUserUID = null;
             if (window.currentParentId) {
                 const parentComment = currentData.find(c => c.id === window.currentParentId);
                 if (parentComment) targetUserUID = parentComment.uid;
             }
-            
-            const appId = CONFIG.oneSignal.appId;
-            const apiKey = CONFIG.oneSignal.restApiKey;
-            let notificationTarget = targetUserUID && targetUserUID !== window.USER_UID 
-                ? { "include_external_user_ids": [targetUserUID] }
-                : { "included_segments": ["Total Subscriptions"] };
-                
-            fetch("https://onesignal.com/api/v1_1/notifications", {
-                method: "POST",
-                headers: { "Content-Type": "application/json; charset=utf-8", "Authorization": "Basic " + apiKey },
-                body: JSON.stringify({
-                    app_id: appId,
-                    ...notificationTarget,
-                    headings: {"en": window.currentParentId ? `Balasan dari ${name}` : `Ulasan Baru: ${name}`},
-                    contents: {"en": textInput.substring(0, 80)},
-                    url: window.location.href
-                })
-            }).catch(e => console.error("Notification failed", e));
+            if(CONFIG.oneSignal && CONFIG.oneSignal.appId) {
+                const appId = CONFIG.oneSignal.appId;
+                const apiKey = CONFIG.oneSignal.restApiKey;
+                let notificationTarget = targetUserUID && targetUserUID !== window.USER_UID
+                    ? { "include_external_user_ids": [targetUserUID] }
+                    : { "included_segments": ["Total Subscriptions"] };
+
+                fetch("https://onesignal.com/api/v1_1/notifications", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json; charset=utf-8", "Authorization": "Basic " + apiKey },
+                    body: JSON.stringify({
+                        app_id: appId, ...notificationTarget,
+                        headings: {"en": window.currentParentId ? `Balasan dari ${name}` : `Ulasan Baru: ${name}`},
+                        contents: {"en": textInput.substring(0, 80)},
+                        url: window.location.href
+                    })
+                }).catch(e => console.error("Notif failed", e));
+            }
+            if(typeof showToast === 'function') showToast("Berhasil terkirim", "success");
         }
 
         await update(dbRef, { comments: updated });
-        showToast("Berhasil terkirim", "success");
-        
-        const justRepliedParentId = window.currentParentId;
-        
+
         window.editingId = null;
-        window.closeModal(); 
-        playSfx('success');
-        
-        if (justRepliedParentId) {
-             window.openReplyIds.add(justRepliedParentId);
-        }
+        window.currentParentId = null;
+        if(window.closeModal) window.closeModal();
+
+        submitBtn.innerText = "Kirim";
+        submitBtn.classList.remove("bg-yellow-600");
+        const modalTitle = document.getElementById('modalTitle');
+        if(modalTitle) { modalTitle.innerText = "KIRIM ULASAN"; modalTitle.style.color = "#f8fafc"; }
+        if(typeof playSfx === 'function') playSfx('success');
 
     } catch (error) {
-        showToast(error.message || "Gagal mengirim", "info");
+        console.error("Submission Error:", error);
+        if(typeof showToast === 'function') showToast(error.message || "Gagal", "info");
     } finally {
         submitBtn.innerText = originalText;
         submitBtn.disabled = false;
     }
 };
 
-// --- REALTIME LISTENER ---
 onValue(window.dbRef, (snap) => {
     try {
         const loader = document.getElementById('loader-wrapper');
         const isScPage = window.location.pathname.includes('sc.html') || window.location.href.includes('/sc');
-        
+
         if(snap.exists()) {
             const val = snap.val();
-            window.siteData.comments = val.comments || [];
+
+            let comms = val.comments || [];
+            if(!Array.isArray(comms)) comms = Object.values(comms);
+
+            window.siteData.comments = comms;
             window.siteData.scriptDownloads = val.scriptDownloads || {};
             window.siteData.scriptLikes = val.scriptLikes || {};
             window.siteData.visitorCount = val.visitorCount || 0;
+
             localStorage.setItem('awang_site_cache', JSON.stringify(window.siteData));
         }
 
@@ -614,14 +658,14 @@ onValue(window.dbRef, (snap) => {
                 window.renderCommentsPreservingState();
             }
         }
-        
+
         if (typeof window.renderScripts === 'function' && !document.getElementById('scriptSearch').value) {
             if (window.isScriptRendered && typeof window.updateOnlyScriptStats === 'function') {
                 window.updateOnlyScriptStats();
             } else {
                 requestAnimationFrame(() => {
-                    window.renderScripts(CONFIG.items);
-                    window.isScriptRendered = true; 
+                    if (CONFIG.items) window.renderScripts(CONFIG.items);
+                    window.isScriptRendered = true;
                 });
             }
         }
@@ -638,12 +682,11 @@ onValue(window.dbRef, (snap) => {
         }
 
     } catch (err) {
-        console.error("Render Error:", err);
+        console.error(err);
         const ldr = document.getElementById('loader-wrapper');
         if(ldr) ldr.style.display = 'none';
     }
 }, (error) => {
-    console.error("Firebase Read Error:", error);
     document.getElementById('loader-wrapper').style.display = 'none';
-    showToast("Gagal memuat data", "info");
+    if(typeof showToast === 'function') showToast("Gagal memuat data", "info");
 });

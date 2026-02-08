@@ -1,13 +1,10 @@
-// ====================================================
-// FILE UTILS.JS
-// Edition: NAVY & DENIM THEME (UTILITY CORE)
-// Status: OPTIMIZED (Smart Icon V4 & Anti-Lag)
-// ====================================================
+// =========================================
+// FILE: js/utils.js
+// =========================================
 
-// --- ADVANCED PERFORMANCE HELPERS (ANTI-LAG SYSTEM) ---
-// Fungsi ini mencegah eksekusi berlebihan pada event scroll/resize/input
-
-// Throttle: Membatasi fungsi agar hanya berjalan sekali setiap X milidetik (Cocok untuk Scroll)
+// =========================================
+// ADVANCED PERFORMANCE HELPERS
+// =========================================
 window.throttle = (func, limit) => {
     let inThrottle;
     return function() {
@@ -21,7 +18,6 @@ window.throttle = (func, limit) => {
     }
 };
 
-// Debounce: Menunggu user selesai melakukan aksi baru menjalankan fungsi (Cocok untuk Search)
 window.debounce = (func, delay) => {
     let debounceTimer;
     return function() {
@@ -32,23 +28,24 @@ window.debounce = (func, delay) => {
     }
 };
 
-// --- FITUR SMART ICON V4 (MASSIVE EXPANSION) ---
-// Mendeteksi ikon berdasarkan kata kunci secara cerdas, lengkap, dan aesthetic.
+// =========================================
+// FITUR SMART ICON V4
+// =========================================
 window.getIcon = function(input) {
     if (!input) return 'fas fa-link';
     const s = input.toLowerCase().trim();
 
-    // Jika input sudah berupa class font-awesome, kembalikan langsung
-    if (s.includes('fa-') || s.includes('fab ') || s.includes('fas ') || s.includes('far ')) return input;
+    if (s.includes('fa-') || s.includes('fab ') || s.includes('fas ') || s.includes('far ')) {
+        return input;
+    }
 
-    // 1. SOCIAL MEDIA & CHAT (LENGKAP)
     if (s.includes('wa') || s.includes('whats')) return 'fab fa-whatsapp';
     if (s.includes('tele') || s.includes('t.me') || s.includes('tg')) return 'fab fa-telegram-plane';
     if (s.includes('yt') || s.includes('you') || s.includes('tube')) return 'fab fa-youtube';
     if (s.includes('ig') || s.includes('insta')) return 'fab fa-instagram';
     if (s.includes('fb') || s.includes('face')) return 'fab fa-facebook-f';
     if (s.includes('mess') || s.includes('msg')) return 'fab fa-facebook-messenger';
-    if (s.includes('twit') || s.includes('x') || s.includes('tweet')) return 'fab fa-twitter'; 
+    if (s.includes('twit') || s.includes('x') || s.includes('tweet')) return 'fab fa-twitter';
     if (s.includes('tiktok') || s.includes('tt')) return 'fab fa-tiktok';
     if (s.includes('git') || s.includes('hub')) return 'fab fa-github';
     if (s.includes('discord') || s.includes('dc')) return 'fab fa-discord';
@@ -66,9 +63,8 @@ window.getIcon = function(input) {
     if (s.includes('medium')) return 'fab fa-medium';
     if (s.includes('tumblr')) return 'fab fa-tumblr';
     if (s.includes('vimeo')) return 'fab fa-vimeo-v';
-    if (s.includes('threads')) return 'fas fa-at'; 
+    if (s.includes('threads')) return 'fas fa-at';
 
-    // 2. CODING, LANGUAGES & TOOLS
     if (s.includes('js') || s.includes('java') || s.includes('node')) return 'fab fa-js';
     if (s.includes('html') || s.includes('web')) return 'fab fa-html5';
     if (s.includes('css') || s.includes('style')) return 'fab fa-css3-alt';
@@ -88,19 +84,18 @@ window.getIcon = function(input) {
     if (s.includes('npm')) return 'fab fa-npm';
     if (s.includes('rust')) return 'fab fa-rust';
     if (s.includes('swift')) return 'fab fa-swift';
-    
-    // 3. CLOUD, SERVER & HOSTING
+
+    if (s.includes('chat') || s.includes('komen')) return 'fas fa-comment';
     if (s.includes('aws') || s.includes('amazon')) return 'fab fa-aws';
     if (s.includes('google cloud') || s.includes('gcp')) return 'fab fa-google';
     if (s.includes('cloudflare')) return 'fab fa-cloudflare';
     if (s.includes('digital') || s.includes('ocean')) return 'fab fa-digital-ocean';
-    if (s.includes('vercel')) return 'fas fa-triangle-exclamation'; 
+    if (s.includes('vercel')) return 'fas fa-triangle-exclamation';
     if (s.includes('heroku')) return 'fab fa-salesforce';
     if (s.includes('cpanel') || s.includes('host') || s.includes('domain')) return 'fas fa-cogs';
     if (s.includes('server') || s.includes('vps') || s.includes('rdp') || s.includes('ssh')) return 'fas fa-server';
     if (s.includes('database') || s.includes('sql') || s.includes('db') || s.includes('mongo')) return 'fas fa-database';
-    
-    // 4. DESIGN & CREATIVE
+
     if (s.includes('figma')) return 'fab fa-figma';
     if (s.includes('sketch')) return 'fab fa-sketch';
     if (s.includes('dribbble')) return 'fab fa-dribbble';
@@ -110,7 +105,6 @@ window.getIcon = function(input) {
     if (s.includes('edit') || s.includes('brush') || s.includes('design')) return 'fas fa-paint-brush';
     if (s.includes('vector') || s.includes('pen')) return 'fas fa-pen-nib';
 
-    // 5. CRYPTO & PAYMENT
     if (s.includes('bitcoin') || s.includes('btc')) return 'fab fa-bitcoin';
     if (s.includes('eth') || s.includes('ethereum')) return 'fab fa-ethereum';
     if (s.includes('wallet') || s.includes('donasi') || s.includes('saweria') || s.includes('trakteer') || s.includes('dana') || s.includes('gopay') || s.includes('ovo') || s.includes('shopeepay')) return 'fas fa-wallet';
@@ -120,7 +114,6 @@ window.getIcon = function(input) {
     if (s.includes('paypal')) return 'fab fa-paypal';
     if (s.includes('qris')) return 'fas fa-qrcode';
 
-    // 6. GENERAL UI & NAVIGATION
     if (s.includes('user') || s.includes('profil') || s.includes('me') || s.includes('admin') || s.includes('akun') || s.includes('portfolio') || s.includes('owner')) return 'fas fa-user-circle';
     if (s.includes('group') || s.includes('grup') || s.includes('komunitas') || s.includes('team') || s.includes('family')) return 'fas fa-users';
     if (s.includes('home') || s.includes('beranda') || s.includes('dash') || s.includes('utama')) return 'fas fa-home';
@@ -136,8 +129,7 @@ window.getIcon = function(input) {
     if (s.includes('stat') || s.includes('anal') || s.includes('chart') || s.includes('graph')) return 'fas fa-chart-line';
     if (s.includes('topup') || s.includes('diamond')) return 'fas fa-gem';
     if (s.includes('premium') || s.includes('pro')) return 'fas fa-star';
-    
-    // 7. FILES & MEDIA
+
     if (s.includes('image') || s.includes('img') || s.includes('pic') || s.includes('galeri')) return 'fas fa-image';
     if (s.includes('video') || s.includes('vid') || s.includes('film') || s.includes('movie')) return 'fas fa-video';
     if (s.includes('music') || s.includes('audio') || s.includes('mp3') || s.includes('song') || s.includes('sound')) return 'fas fa-music';
@@ -145,10 +137,10 @@ window.getIcon = function(input) {
     if (s.includes('download') || s.includes('unduh') || s.includes('get') || s.includes('ambil')) return 'fas fa-download';
     if (s.includes('upload') || s.includes('unggah') || s.includes('post')) return 'fas fa-upload';
     if (s.includes('link') || s.includes('url') || s.includes('tautan') || s.includes('web')) return 'fas fa-link';
+        if (s.includes('ai') || s.includes('chatai')) return 'fas fa-robot';
     if (s.includes('code') || s.includes('script') || s.includes('bot') || s.includes('source') || s.includes('sc') || s.includes('coding')) return 'fas fa-code';
     if (s.includes('term') || s.includes('shell') || s.includes('cmd') || s.includes('cli')) return 'fas fa-terminal';
-    
-    // 8. MISC & UTILS
+
     if (s.includes('bug') || s.includes('error') || s.includes('fix') || s.includes('report')) return 'fas fa-bug';
     if (s.includes('lock') || s.includes('kunci') || s.includes('secure') || s.includes('private')) return 'fas fa-lock';
     if (s.includes('api') || s.includes('key') || s.includes('token')) return 'fas fa-key';
@@ -172,46 +164,51 @@ window.getIcon = function(input) {
     if (s.includes('trophy') || s.includes('piala') || s.includes('winner')) return 'fas fa-trophy';
     if (s.includes('gift') || s.includes('hadiah') || s.includes('giveaway')) return 'fas fa-gift';
 
-    // Default Fallback
-    return 'fas fa-link'; 
+    return 'fas fa-link';
 };
 
-// --- AUDIO & TOAST NOTIFICATION ---
+// =========================================
+// AUDIO & TOAST NOTIFICATION
+// =========================================
 window.playSfx = (type) => {
     const sound = document.getElementById(type === 'success' ? 'sound-success' : 'sound-pop');
-    if (sound) { 
-        sound.currentTime = 0; 
-        sound.play().catch(() => {}); // Silent catch
+    if (sound) {
+        sound.currentTime = 0;
+        sound.volume = 0.5;
+        sound.play().catch(() => {});
     }
 };
 
 window.showToast = (msg, type = 'info') => {
     const container = document.getElementById('toastContainer');
     if (!container) return;
-    
+
     const toast = document.createElement('div');
     toast.className = `toast-item toast-${type}`;
-    
-    const icon = type === 'success' ? 'fa-check' : 'fa-info';
-    
+
+    const icon = type === 'success' ? 'fa-check' : (type === 'warning' ? 'fa-exclamation-triangle' : 'fa-info');
+    const colorClass = type === 'success' ? 'text-green-500' : (type === 'warning' ? 'text-yellow-500' : 'text-blue-500');
+
     toast.innerHTML = `
-        <div class="toast-icon"><i class="fas ${icon}"></i></div>
+        <div class="toast-icon ${colorClass}"><i class="fas ${icon}"></i></div>
         <div class="toast-msg">${msg}</div>
     `;
-    
+
     container.appendChild(toast);
-    
-    void toast.offsetWidth; 
-    
+
+    void toast.offsetWidth;
+
     setTimeout(() => toast.classList.add('show'), 50);
-    
+
     setTimeout(() => {
         toast.classList.remove('show');
         setTimeout(() => toast.remove(), 500);
     }, 3000);
 };
 
-// --- DATE & NUMBER FORMATTERS ---
+// =========================================
+// FORMATTERS
+// =========================================
 window.formatDate = (isoString) => {
     if (!isoString) return "-";
     const date = new Date(isoString);
@@ -231,15 +228,22 @@ window.formatK = (num) => {
     return Math.abs(num) > 999 ? Math.sign(num) * ((Math.abs(num) / 1000).toFixed(1)) + 'k' : Math.abs(num);
 };
 
-// --- CLOUDINARY UPLOAD HANDLER ---
+// =========================================
+// CLOUDINARY UPLOAD HANDLER
+// =========================================
 window.uploadToCloudinary = async (file) => {
+    if (!CONFIG.cloudinary) {
+        if(typeof showToast === 'function') showToast("Config Cloudinary Hilang!", "error");
+        return null;
+    }
+
     const CLOUD_NAME = CONFIG.cloudinary.cloudName;
     const UPLOAD_PRESET = CONFIG.cloudinary.uploadPreset;
 
     const formData = new FormData();
     formData.append('file', file);
     formData.append('upload_preset', UPLOAD_PRESET);
-    formData.append('folder', 'user_reviews'); 
+    formData.append('folder', 'user_reviews');
 
     try {
         const response = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, {
@@ -253,30 +257,30 @@ window.uploadToCloudinary = async (file) => {
         }
 
         const data = await response.json();
-        return data.secure_url; 
+        return data.secure_url;
     } catch (err) {
-        console.error("Cloudinary Error Detail:", err);
+        console.error("Cloudinary Error:", err);
         return null;
     }
 };
 
-// --- UI UTILITIES (SCROLL & LIGHTBOX) ---
-
+// =========================================
+// UI UTILITIES (SCROLL & LIGHTBOX)
+// =========================================
 let isScrollThrottled = false;
 
 window.updateScrollDots = (cId, dId) => {
     if (isScrollThrottled) return;
-
     isScrollThrottled = true;
 
     window.requestAnimationFrame(() => {
         const list = document.getElementById(cId);
         const dots = document.getElementById(dId);
-        
+
         if (list && dots) {
             const scrollLeft = list.scrollLeft;
             const width = list.clientWidth;
-            
+
             if (width > 0) {
                 const active = Math.round(scrollLeft / width);
                 const count = Math.ceil(list.scrollWidth / width);
@@ -285,30 +289,27 @@ window.updateScrollDots = (cId, dId) => {
                 for (let i = 0; i < count; i++) {
                     dotHtml += `<div class="dot-item ${i === active ? 'active' : ''}"></div>`;
                 }
-                
+
                 if (dots.innerHTML !== dotHtml) {
                     dots.innerHTML = dotHtml;
                 }
             }
         }
-        
-        setTimeout(() => {
-            isScrollThrottled = false;
-        }, 100); 
+        setTimeout(() => { isScrollThrottled = false; }, 100);
     });
 };
 
-window.openLightbox = (url) => { 
-    const lb = document.getElementById('lightbox'); 
-    const img = document.getElementById('lightboxImg'); 
+window.openLightbox = (url) => {
+    const lb = document.getElementById('lightbox');
+    const img = document.getElementById('lightboxImg');
     if (lb && img) {
-        img.src = url; 
-        lb.classList.add('active'); 
-        playSfx('pop'); 
+        img.src = url;
+        lb.classList.add('active');
+        if(typeof playSfx === 'function') playSfx('pop');
     }
 };
 
-window.closeLightbox = () => { 
+window.closeLightbox = () => {
     const lb = document.getElementById('lightbox');
-    if (lb) lb.classList.remove('active'); 
+    if (lb) lb.classList.remove('active');
 };

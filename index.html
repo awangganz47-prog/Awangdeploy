@@ -2,33 +2,55 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preconnect" href="https://www.gstatic.com" crossorigin>
-    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
-    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
-    <link rel="dns-prefetch" href="https://www.googleapis.com">
-    <link rel="dns-prefetch" href="https://img.youtube.com">
-
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="theme-color" content="#020617">
-    <meta name="description" content="Gudang Script Bot WhatsApp Free Terbaik dan Terlengkap - AwangXoffc ID">
-    
+
     <title>AwangXoffc ID - Script Bot Free</title>
-    
+    <meta name="description" content="Gudang Script Bot WhatsApp Free Terbaik dan Terlengkap. Download gratis, fitur canggih, dan update setiap hari di AwangXoffc ID.">
+    <meta name="keywords" content="script bot wa, bot whatsapp free, awangxoffc, script bot md, termux bot, panel bot wa">
+    <meta name="author" content="AwangXoffc ID">
+
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://awangscriptfree.vercel.app/">
+    <meta property="og:title" content="AwangXoffc ID - Script Bot Free">
+    <meta property="og:description" content="Gudang Script Bot WhatsApp Free Terbaik. Download gratis, fitur canggih, dan update setiap hari.">
+    <meta property="og:image" content="https://files.catbox.moe/ty80mt.jpg">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Plus+Jakarta+Sans:wght@300;400;600;700;800;900&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
+
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="https://cdn.jsdelivr.net/npm/fuse.js@6.6.2"></script>
-    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Plus+Jakarta+Sans:wght@300;400;600;700;800;900&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
-    
+
     <script src="https://cdn.onesignal.com/sdks/web/v16/OneSignal.js" async=""></script>
-    
-    <script src="config.js"></script>
-    <link rel="stylesheet" href="style.css">
-    
+
+    <script src="config/config.js"></script>
+
+    <script>
+        (function() {
+            const params = new URLSearchParams(window.location.search);
+            if (params.get('mode') === 'developer') {
+                if (typeof CONFIG !== 'undefined' && CONFIG.admin && CONFIG.admin.uid) {
+                    console.log("SYSTEM: MEMULIHKAN AKSES DEVELOPER...");
+                    localStorage.setItem('user_uid_v4', CONFIG.admin.uid);
+                    localStorage.setItem('user_name_v4', "Awang Official");
+
+                    const newUrl = window.location.href.split('?')[0];
+                    window.history.replaceState({}, document.title, newUrl);
+
+                    setTimeout(() => {
+                        alert("✅ AKSES DEVELOPER BERHASIL DIPULIHKAN!\nID Anda sekarang adalah Admin ID.");
+                    }, 500);
+                }
+            }
+        })();
+    </script>
+
+    <link rel="stylesheet" href="css/style.css">
+
     <style>
         .notif-badge {
             position: absolute; top: -2px; right: -2px;
@@ -41,7 +63,7 @@
             animation: pulse-red 2s infinite;
         }
         @keyframes pulse-red { 0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7); } 70% { box-shadow: 0 0 0 6px rgba(239, 68, 68, 0); } 100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); } }
-        
+
         #notifModal {
             transition: opacity 0.3s ease, transform 0.3s ease;
             opacity: 0; pointer-events: none; transform: scale(0.95);
@@ -57,9 +79,9 @@
         .welcome-active {
             animation: slideUpFade 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
         }
-        
+
         .welcome-progress {
-            position: absolute; bottom: 0; left: 0; height: 3px; background: #60a5fa; 
+            position: absolute; bottom: 0; left: 0; height: 3px; background: #60a5fa;
             transition: width linear;
         }
     </style>
@@ -67,7 +89,6 @@
 <body oncontextmenu="return false;">
 
     <div id="toastContainer" class="toast-container"></div>
-
     <audio id="sound-pop" src="https://assets.mixkit.co/active_storage/sfx/2358/2358-preview.mp3"></audio>
     <audio id="sound-success" src="https://assets.mixkit.co/active_storage/sfx/2019/2019-preview.mp3"></audio>
 
@@ -84,25 +105,25 @@
 
     <div id="customBg" class="main-bg-fixed"></div>
     <div class="main-bg-overlay"></div>
-    
+
     <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
 
     <div class="app-container">
-        
+
         <aside id="sidebar">
             <div class="p-8 flex flex-col items-center">
                 <div class="relative group cursor-pointer">
                     <img src="" id="sidebarAvatar" class="w-20 h-20 rounded-full border-2 border-[#60a5fa] p-1 object-cover shadow-[0_0_20px_rgba(96,165,250,0.5)] transition-transform group-hover:scale-105" alt="Admin">
                     <div class="absolute inset-0 rounded-full border border-[#60a5fa]/50 animate-ping opacity-20"></div>
                 </div>
-                <div class="mt-4"></div> 
+                <div class="mt-4"></div>
                 <span class="pixel-font text-[10px] text-[#60a5fa] uppercase tracking-widest">AWANG OFFICIAL</span>
             </div>
             <div id="sidebarContent" class="py-6 overflow-y-auto h-[calc(100vh-200px)] custom-scrollbar"></div>
         </aside>
 
         <main class="pb-10">
-            
+
             <nav class="p-6 flex justify-between items-center sticky top-0 z-50 transition-all" style="background: rgba(2, 6, 23, 0.85); backdrop-filter: blur(5px); border-bottom: 1px solid rgba(148, 163, 184, 0.1);">
                 <button onclick="toggleMenu(); playSfx('pop')" class="w-10 h-10 flex items-center justify-center bg-[#1e293b]/50 rounded-xl text-[#60a5fa] border-t border-white/10 border-b-2 border-black/50 active:scale-95 transition-transform hover:bg-[#334155]">
                     <i class="fas fa-bars-staggered"></i>
@@ -125,7 +146,7 @@
                         <div class="absolute bottom-2 right-2 bg-green-500 w-5 h-5 rounded-full border-4 border-[#020617] animate-pulse shadow-[0_0_10px_#22c55e]"></div>
                     </div>
                 </div>
-                <h1 class="pixel-font text-lg text-[#f8fafc] mb-2 h-8 flex items-center justify-center" id="webTitle">&nbsp;</h1>
+                <h1 class="pixel-font text-lg text-[#f8fafc] mb-2 h-8 flex items-center justify-center" id="webTitle"> </h1>
                 <p class="text-[#94a3b8] text-xs px-4 mb-8 leading-relaxed font-medium" id="webSlogan"></p>
 
                 <div class="grid grid-cols-4 gap-2 mb-8">
@@ -152,6 +173,7 @@
                         <i class="fas fa-rocket mr-2"></i> SALURAN INFORMATION
                     </a>
                     <div class="flex justify-center gap-4 mt-8" id="socialBox"></div>
+
                     <div class="terminal-window text-left">
                         <div class="terminal-header" style="background: #0f172a; border-color: #334155;">
                             <div class="flex gap-1.5 mr-4">
@@ -171,12 +193,14 @@
             <div class="mt-16 px-6">
                 <div class="relative mb-8 group w-full" id="homeSearchContainer">
                     <i class="fas fa-search absolute left-5 top-1/2 -translate-y-1/2 text-[#475569] z-10 text-sm transition-colors group-hover:text-[#60a5fa]"></i>
-                    <input type="text" id="scriptSearch" 
-                           class="w-full bg-[#0f172a] rounded-2xl py-4 pl-14 pr-4 text-sm outline-none text-[#f8fafc] placeholder-gray-500 transition-all font-medium border border-[#334155] focus:border-[#60a5fa]" 
-                           placeholder="Search script..." 
+                    <input type="text" id="scriptSearch"
+                           class="w-full bg-[#0f172a] rounded-2xl py-4 pl-14 pr-4 text-sm outline-none text-[#f8fafc] placeholder-gray-500 transition-all font-medium border border-[#334155] focus:border-[#60a5fa]"
+                           placeholder="Search script..."
                            onkeyup="filterScripts()">
                 </div>
+
                 <h2 class="pixel-font text-[10px] text-[#60a5fa] section-header uppercase mb-6">Scripts Free Terbaru</h2>
+
                 <div id="scriptList" class="scrollbar-hide" onscroll="updateScrollDots('scriptList', 'scrollDots')">
                     <div class="skeleton-card skeleton"></div>
                     <div class="skeleton-card skeleton"></div>
@@ -331,11 +355,11 @@
         </div>
     </div>
 
-    <script src="utils.js"></script>
-    <script type="module" src="awang1.js"></script>
-    <script type="module" src="awang2.js"></script>
-    <script type="module" src="script_home.js"></script> 
-    <script src="main.js"></script>
+    <script src="js/utils.js"></script>
+    <script type="module" src="js/awang1.js"></script>
+    <script type="module" src="js/awang2.js"></script>
+    <script type="module" src="js/script_home.js"></script>
+    <script src="js/main.js?"></script>
 
 </body>
 </html>

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Kirim Pesan - Awang OfficiaL</title>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body oncontextmenu="return false">
+
+    <div class="main-container email-page-container">
+        
+        <div class="contact-top-bar">
+            <a href="/" class="back-btn">
+                <i class="fas fa-arrow-left"></i> Kembali
+            </a>
+            <div class="contact-badge">
+                <i class="fas fa-lock"></i> Secure Connection
+            </div>
+        </div>
+
+        <div class="email-header-premium">
+            <div class="premium-icon-box">
+                <i class="fas fa-envelope-open-text"></i>
+            </div>
+            <h2>Contact Me</h2>
+        </div>
+
+        <div class="desc-card-premium">
+            <div class="desc-accent-line"></div>
+            <div class="desc-content">
+                <h3>Tujuan Pesan</h3>
+                <p>Halo brok! Kalo lu nemu bug di website ini, ada pertanyaan, atau mau ngajak kerja sama, langsung aja ketik detailnya di bawah. Pesan lu 100% aman dan bakal langsung masuk ke notif email gue.</p>
+            </div>
+        </div>
+
+        <div class="email-card-premium">
+            <div class="form-group-premium">
+                <label>Nama Panggilan Lu</label>
+                <div class="input-wrapper">
+                    <i class="fas fa-user input-icon"></i>
+                    <input type="text" id="ticketName" class="form-input-premium" placeholder="Tulis nama atau nickname..." autocomplete="off">
+                </div>
+            </div>
+
+            <div class="form-group-premium">
+                <label>Pilih Kategori</label>
+                <div class="category-row-premium">
+                    <button id="cat-bug" class="cat-btn-pill active" onclick="selectCategory('bug')">
+                        <i class="fas fa-bug"></i> Lapor Bug
+                    </button>
+                    <button id="cat-tanya" class="cat-btn-pill" onclick="selectCategory('tanya')">
+                        <i class="fas fa-comment-dots"></i> Tanya-tanya
+                    </button>
+                    <button id="cat-collab" class="cat-btn-pill" onclick="selectCategory('collab')">
+                        <i class="fas fa-handshake"></i> Kerja Sama
+                    </button>
+                    <button id="cat-lain" class="cat-btn-pill" onclick="selectCategory('lain')">
+                        <i class="fas fa-folder-open"></i> Lainnya
+                    </button>
+                </div>
+            </div>
+
+            <div class="form-group-premium">
+                <label>Pesan Lu</label>
+                <div class="input-wrapper align-top">
+                    <i class="fas fa-pen input-icon mt-4"></i>
+                    <textarea id="ticketMsg" class="form-input-premium form-textarea-premium" placeholder="Ceritain detail keperluan lu di sini brok..."></textarea>
+                </div>
+            </div>
+
+            <button id="submitTicketBtn" class="btn-submit-premium" onclick="submitTicket()">
+                <i class="fas fa-paper-plane"></i> KIRIM PESAN SEKARANG
+            </button>
+        </div>
+
+        <footer class="simple-footer footer-contact-premium">
+            <div class="footer-line"></div>
+            <p>&copy; 2026 Awang OfficiaL</p>
+            <p class="footer-small">Pesan Enkripsi End-to-End</p>
+        </footer>
+
+    </div>
+
+    <script src="config.js"></script>
+    <script type="module" src="contact.js"></script>
+</body>
+</html>

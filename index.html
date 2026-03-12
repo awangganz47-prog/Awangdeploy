@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Bio Profile - Awang OfficiaL</title>
+    
+    <meta property="og:title" content="Awang OfficiaL - Bio Profile">
+    <meta property="og:description" content="Welcome di markas gue! Klik buat liat project, musik, dan chat AI gue.">
+    <meta property="og:image" content="assets/images/profile.jpg">
+    <meta property="og:url" content="https://awangoffc.my.id">
+    <meta property="og:type" content="website">
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body oncontextmenu="return false">
+
+    <div id="splashScreen">
+        <div class="splash-content">
+            <div class="splash-logo-ring">
+                <i class="fas fa-crown"></i>
+            </div>
+            <h1 class="splash-title">AWANG OFFICIAL</h1>
+            <div class="splash-line"></div>
+            <p class="splash-subtitle">LOADING SYSTEM...</p>
+        </div>
+    </div>
+
+    <div class="status-bar">
+        <div class="clock-box">
+            <i class="far fa-clock"></i> <span id="clockTime">00:00:00</span>
+        </div>
+        <div class="top-stats">
+            <div class="stat-item">
+                <i class="fas fa-eye"></i> <span id="viewCount">...</span>
+            </div>
+            <div class="stat-item" id="likeBtn" style="cursor:pointer">
+                <i id="likeIcon" class="far fa-heart"></i> <span id="likeCount">...</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="running-text-container">
+        <div class="running-label">INFO</div>
+        <div class="running-content">
+            <marquee id="marqueeText" scrollamount="5">Loading info...</marquee>
+        </div>
+    </div>
+
+    <div class="main-container">
+        
+        <header class="profile-section">
+            <div class="profile-card-unique">
+                <div class="profile-ring">
+                 <img id="profileImg" src="" alt="Profile" class="profile-img">
+                </div>
+                
+                <div class="name-container">
+                    <h1 id="webName" class="web-title">Loading...</h1>
+                    <span id="verifiedBadge" class="verified-icon" style="display:none;">
+                        <i class="fas fa-check-circle"></i>
+                    </span>
+                </div>
+
+                <p id="webDesc" class="web-desc"></p>
+                <div id="profileTags" class="tags-container"></div>
+                <div id="socialLinks" class="social-row"></div>
+            </div>
+        </header>
+
+        <div class="music-wrapper">
+            <div class="music-card-outer">
+                <div class="music-card-inner">
+                    <div class="music-top-label">
+                        <span><i class="fab fa-spotify"></i> Playlist</span>
+                        <span style="color:var(--primary-gold)">LIVE</span>
+                    </div>
+
+                    <div class="music-grid">
+                        <div class="visual-box">
+                            <div class="visual-bg" id="visualBg"></div>
+                            <img id="musicCover" src="" class="album-cover">
+                            <canvas id="visualizerCanvas"></canvas>
+                        </div>
+                        <div class="playlist-box" id="playlistContainer"></div>
+                    </div>
+
+                    <div class="control-deck">
+                        <div class="time-info">
+                            <span id="currentTime">00:00</span>
+                            <span id="durationTime">00:00</span>
+                        </div>
+                        
+                        <div class="progress-bg" onclick="seekAudio(event)">
+                            <div id="progressFill" class="progress-fill"></div>
+                        </div>
+
+                        <div class="buttons-row">
+                            <button class="btn-small" id="shuffleBtn" onclick="toggleShuffle()"><i class="fas fa-shuffle"></i></button>
+                            <button class="btn-main" onclick="prevTrack()"><i class="fas fa-backward-step"></i></button>
+                            <button class="btn-play-big" onclick="togglePlay()">
+                                <i id="playIcon" class="fas fa-play"></i>
+                            </button>
+                            <button class="btn-main" onclick="nextTrack()"><i class="fas fa-forward-step"></i></button>
+                            <button class="btn-small" id="repeatBtn" onclick="toggleRepeat()"><i class="fas fa-repeat"></i></button>
+                        </div>
+
+                        <div class="vol-container">
+                            <i class="fas fa-volume-low vol-icon"></i>
+                            <div class="vol-bg" onclick="setVolume(event)">
+                                <div class="vol-fill" id="volFill"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <audio id="audioPlayer" crossOrigin="anonymous"></audio>
+        </div>
+
+        <div id="linkContainer" class="menu-list"></div>
+
+        <div class="gallery-section">
+            <div class="gallery-box">
+                <div class="gallery-label">GALLERY</div>
+                <div class="slider-outer-clip">
+                    <div class="slide-track" id="sliderTrack"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="chat-container">
+            <div class="chat-header">
+                <div class="bot-avatar">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <div class="bot-info">Awang AI</div>
+                <div onclick="clearChat()" class="trash-btn" style="margin-left:auto; cursor:pointer; padding:5px;">
+                    <i class="fas fa-trash"></i>
+                </div>
+            </div>
+            <div id="chatBox" class="chat-box">
+                <div class="bot-msg">Halo Bre! Gue Awang Ai. Assitent Ai Yang Di Rancang Oleh AwangXoffc ID Untuk Menjawab Pertanyaan Anda?</div>
+            </div>
+            <div class="chat-input-area">
+                <input id="chatInput" type="text" class="chat-input" placeholder="Tanya AI..." autocomplete="off">
+                <button onclick="handleGroqChat()" class="chat-btn"><i class="fas fa-paper-plane"></i></button>
+            </div>
+        </div>
+
+        <footer class="simple-footer">
+            <div class="footer-line"></div>
+            <p>&copy; 2025 <span id="footerName"></span></p>
+            <p class="footer-small">All Rights Reserved</p>
+        </footer>
+    </div>
+
+    <script src="config.js"></script>
+    <script type="module" src="main.js"></script>
+</body>
+</html>

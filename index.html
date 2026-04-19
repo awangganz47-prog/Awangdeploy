@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Bio Profile - Awang OfficiaL</title>
+    
+    <meta name="title" content="Awang OfficiaL - Bio Profile">
+    <meta name="description" content="Welcome di markas gue! Klik buat liat project, musik, dan chat AI gue.">
+    <meta name="theme-color" content="#151515">
+    
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://awangofc.my.id/">
+    <meta property="og:title" content="Awang OfficiaL - Bio Profile">
+    <meta property="og:description" content="Welcome di markas gue! Klik buat liat project, musik, dan chat AI gue.">
+    <meta property="og:image" content="https://awangofc.my.id/assets/images/profile.jpg">
+    
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://awangofc.my.id/">
+    <meta property="twitter:title" content="Awang OfficiaL - Bio Profile">
+    <meta property="twitter:description" content="Welcome di markas gue! Klik buat liat project, musik, dan chat AI gue.">
+    <meta property="twitter:image" content="https://awangofc.my.id/assets/images/profile.jpg">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script>
+        if(localStorage.getItem('theme') === 'light') {
+            document.documentElement.setAttribute('data-theme', 'light');
+        }
+    </script>
+</head>
+<body oncontextmenu="return false">
+
+    <div id="bg-base"></div>
+
+    <div id="splashScreen">
+        <div class="splash-content-premium">
+            <div class="splash-core-container">
+                <div class="core-ring core-ring-1"></div>
+                <div class="core-ring core-ring-2"></div>
+                <div class="core-ring core-ring-3"></div>
+                <i class="fas fa-bolt core-icon"></i>
+            </div>
+            <h1 class="splash-text-premium">AWANG OFFICIAL</h1>
+            <div class="cyber-progress">
+                <div class="cyber-progress-bar"></div>
+            </div>
+            <p class="splash-status-blink">LOADING ASSETS...</p>
+        </div>
+    </div>
+
+    <div class="status-bar">
+        <div class="clock-box">
+            <i class="far fa-clock"></i> <span id="clockTime">00:00:00</span>
+        </div>
+        <div class="top-stats">
+            <div class="stat-item">
+                <i class="fas fa-eye"></i> <span id="viewCount">...</span>
+            </div>
+            <div class="stat-item" id="likeBtn" style="cursor:pointer">
+                <i id="likeIcon" class="far fa-heart"></i> <span id="likeCount">...</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="running-text-container">
+        <div class="running-label">INFO</div>
+        <div class="running-content">
+            <div id="marqueeText" class="ticker-text">Loading info...</div>
+        </div>
+    </div>
+
+    <div class="main-container">
+        
+        <header class="profile-section">
+            <div class="profile-card-unique">
+                <div class="profile-ring">
+                 <img id="profileImg" src="" alt="Profile" class="profile-img" loading="lazy">
+                </div>
+                <div class="name-container">
+                    <h1 id="webName" class="web-title">Loading...</h1>
+                    <span id="verifiedBadge" class="verified-icon" style="display:none;">
+                        <i class="fas fa-check-circle"></i>
+                    </span>
+                </div>
+                <p id="webDesc" class="web-desc"></p>
+                <div id="profileTags" class="tags-container"></div>
+                <div id="socialLinks" class="social-row"></div>
+            </div>
+        </header>
+
+        <div class="music-wrapper">
+            <div class="music-card-outer">
+                <div class="music-header">Spotify Playlist</div>
+                <iframe id="spotifyWidget" src="" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+            </div>
+        </div>
+
+        <div id="linkContainer" class="menu-list"></div>
+
+        <div class="gallery-section">
+            <div class="gallery-box">
+                <div class="gallery-label">GALLERY</div>
+                <div class="slider-outer-clip">
+                    <div class="slide-track" id="sliderTrack"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="hub-container">
+            <div class="hub-nav">
+                <div class="hub-tab active" onclick="switchHub('chat')" id="tab-chat">
+                    <i class="fas fa-robot"></i> AI
+                </div>
+                <div class="hub-tab" onclick="switchHub('tictactoe')" id="tab-tictactoe">
+                    <i class="fas fa-gamepad"></i> XO
+                </div>
+                <div class="hub-tab" onclick="switchHub('memory')" id="tab-memory">
+                    <i class="fas fa-clone"></i> Match
+                </div>
+                <div class="hub-tab" onclick="switchHub('dino')" id="tab-dino">
+                    <i class="fas fa-dragon"></i> Dino
+                </div>
+            </div>
+            
+            <div id="view-chat" class="hub-view active-view">
+                <div id="chatBox" class="chat-box">
+                    <div class="bot-msg">Halo Bre! Gue Awang Ai. Ada yang bisa gue bantu, atau lu mau main game di tab atas?</div>
+                </div>
+                <div class="chat-input-area">
+                    <div onclick="clearChat()" class="trash-btn-chat">
+                        <i class="fas fa-trash"></i>
+                    </div>
+                    <input id="chatInput" type="text" class="chat-input" placeholder="Tanya AI..." autocomplete="off">
+                    <button onclick="handleGroqChat()" class="chat-btn">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div id="view-tictactoe" class="hub-view">
+                <div class="game-top">
+                    <span id="xoScore">X: 4 | O: 0</span>
+                    <span id="xoStatus">Turn: X</span>
+                </div>
+                <div class="game-wrapper">
+                    <div class="game-side-decor">
+                        <i class="fas fa-server"></i>
+                        <div class="decor-line"></div>
+                        <i class="fas fa-hdd"></i>
+                    </div>
+                    <div class="xo-board" id="xoBoard"></div>
+                    <div class="game-side-decor">
+                        <i class="fas fa-microchip"></i>
+                        <div class="decor-line"></div>
+                        <i class="fas fa-network-wired"></i>
+                    </div>
+                </div>
+                <button class="game-reset-btn" onclick="initXO()">Reset Grid</button>
+            </div>
+
+            <div id="view-memory" class="hub-view">
+                <div class="game-top">
+                    <span id="memoryTime">Time: 5s</span>
+                    <span id="memoryBest">Best: -s (-)</span>
+                    <span id="memoryStatus">Flips: 0</span>
+                </div>
+                <div class="game-wrapper">
+                    <div class="game-side-decor">
+                        <i class="fas fa-database"></i>
+                        <div class="decor-line"></div>
+                        <i class="fas fa-link"></i>
+                    </div>
+                    <div class="memory-board" id="memoryBoard"></div>
+                    <div class="game-side-decor">
+                        <i class="fas fa-bolt"></i>
+                        <div class="decor-line"></div>
+                        <i class="fas fa-plug"></i>
+                    </div>
+                </div>
+                <button class="game-reset-btn" onclick="initMemory()">Shuffle Cards</button>
+            </div>
+
+            <div id="view-dino" class="hub-view">
+                <div class="game-top">
+                    <span id="dinoHighScore" class="font-mono">HI: 00046</span>
+                    <span id="dinoScore" class="font-mono">Score: 00000</span>
+                </div>
+                <div class="dino-world-wrapper">
+                    <div class="dino-world" id="dinoWorld" onclick="dinoJump()">
+                        <div class="dino-player" id="dinoPlayer">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 176 188" width="44" height="47" fill="currentColor">
+                                <path d="M88 0h88v20h-12v8h-12v28h8v12h-16v12h-12v8h-12v8h-12v8h-12v16h-12v24h-12v20H40v16H28v12H16v-12H4v-12h12v-12h12v-12h12v-16h12v-16h12v-20h12v-12h12v-8h12v-8h12v-8h12V28H88V0zm44 20h12v12h-12V20z"/>
+                            </svg>
+                        </div>
+                        <div class="dino-obstacle" id="dinoObstacle" style="display:none;">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 200" width="25" height="50" fill="currentColor">
+                                <path d="M40 0h20v80h20V40h20v60H80v60H60v40H40V160H20V120H0V60h20v40h20V0z"/>
+                            </svg>
+                        </div>
+                        <div class="dino-ground" id="dinoGround"></div>
+                        <div class="dino-start-text" id="dinoStartText">Tap Area To Start</div>
+                    </div>
+                </div>
+                <button class="game-reset-btn" onclick="startDino()">Reset Game</button>
+            </div>
+        </div>
+
+        <footer class="simple-footer">
+            <div class="footer-line"></div>
+            <p>© 2026 <span id="footerName"></span></p>
+            <p class="footer-small">All Rights Reserved</p>
+        </footer>
+
+    </div>
+
+    <div id="themeToggle" class="theme-toggle-btn">
+        <i id="themeIcon" class="fas fa-moon"></i>
+    </div>
+
+    <script src="config.js"></script>
+    <script type="module" src="main.js"></script>
+</body>
+</html>

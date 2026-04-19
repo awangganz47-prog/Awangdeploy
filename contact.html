@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Hubungi Kami - Awang OfficiaL</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script>
+        if(localStorage.getItem('theme') === 'light') {
+            document.documentElement.setAttribute('data-theme', 'light');
+        }
+    </script>
+</head>
+<body oncontextmenu="return false">
+
+    <div id="bg-base"></div>
+
+    <div class="main-container email-page-container">
+        
+        <div class="contact-top-bar-modern">
+            <a href="/" class="back-btn-modern">
+                <i class="fas fa-chevron-left"></i> Kembali
+            </a>
+            <div class="status-pill-modern">
+                <div class="status-dot-modern"></div> Online
+            </div>
+        </div>
+
+        <div class="contact-hero-modern">
+            <h1 class="text-gradient">Mari Bicara.</h1>
+            <div class="hero-desc-box">
+                <p>Punya ide keren, tawaran kolaborasi, atau sekadar ingin menyapa? Jangan ragu untuk memilih metode di bawah ini.</p>
+            </div>
+        </div>
+
+        <div class="contact-bento-grid">
+            <a href="https://wa.me/556184127506" target="_blank" class="bento-card">
+                <i class="fab fa-whatsapp bento-icon bento-wa"></i>
+                <span>WhatsApp</span>
+                <small>Respon Paling Cepat</small>
+            </a>
+            <a href="https://t.me/awangoffc" target="_blank" class="bento-card">
+                <i class="fab fa-telegram-plane bento-icon bento-tg"></i>
+                <span>Telegram</span>
+                <small>Chat Komunitas</small>
+            </a>
+        </div>
+
+        <div class="email-card-glass">
+            <h3><i class="fas fa-paper-plane"></i> Kirim Pesan Email</h3>
+
+            <div class="form-floating">
+                <input type="text" id="ticketName" class="form-control-custom" placeholder=" ">
+                <label class="form-label-custom">Nama Lengkap / Panggilan</label>
+            </div>
+
+            <span class="category-label-modern">Pilih Topik Pembicaraan:</span>
+            <div class="category-grid-modern">
+                <button id="cat-bug" class="cat-btn-modern active" onclick="selectCategory('bug')">
+                    <i class="fas fa-bug"></i> Laporan Bug
+                </button>
+                <button id="cat-tanya" class="cat-btn-modern" onclick="selectCategory('tanya')">
+                    <i class="fas fa-comments"></i> Pertanyaan Umum
+                </button>
+                <button id="cat-collab" class="cat-btn-modern" onclick="selectCategory('collab')">
+                    <i class="fas fa-handshake"></i> Tawaran Kolaborasi
+                </button>
+                <button id="cat-lain" class="cat-btn-modern" onclick="selectCategory('lain')">
+                    <i class="fas fa-asterisk"></i> Keperluan Lainnya
+                </button>
+            </div>
+
+            <div class="form-floating">
+                <textarea id="ticketMsg" class="form-control-custom form-textarea-custom" placeholder=" "></textarea>
+                <label class="form-label-custom">Jelaskan detail pesan Anda...</label>
+            </div>
+
+            <button id="submitTicketBtn" class="btn-submit-modern" onclick="submitTicket()">
+                KIRIM PESAN SEKARANG <i class="fas fa-arrow-right"></i>
+            </button>
+        </div>
+
+        <footer class="simple-footer footer-contact-modern">
+            <div class="footer-line"></div>
+            <p>© 2026 Awang OfficiaL</p>
+            <p class="footer-small">Sistem Tiket Otomatis & Terenkripsi</p>
+        </footer>
+
+    </div>
+
+    <script src="config.js"></script>
+    <script type="module" src="contact.js"></script>
+</body>
+</html>

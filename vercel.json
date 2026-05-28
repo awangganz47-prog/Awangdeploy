@@ -1,0 +1,21 @@
+{
+  "cleanUrls": true,
+  "trailingSlash": false,
+  "redirects": [
+    {
+      "source": "/room",
+      "destination": "https://chat.whatsapp.com/DEA9Emn1kGBCN4JpgwWBqg",
+      "permanent": true
+    },
+    {
+      "source": "/support",
+      "destination": "https://donasi.awangofc.my.id",
+      "permanent": true
+    },
+    {
+      "source": "/produk",
+      "destination": "https://listproduk.awangofc.my.id",
+      "permanent": true
+    }
+  ]
+}

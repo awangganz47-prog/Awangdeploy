@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Hubungi Kami - Awang OfficiaL</title>
+
+    <link rel="icon" id="faviconMain" type="image/png" href="assets/images/icon.png">
+    <link rel="apple-touch-icon" id="faviconApple" href="assets/images/icon.png">
+
+    <meta name="title" content="Hubungi Kami - Awang OfficiaL">
+    <meta name="description" content="Punya ide luar biasa, tawaran kerja sama, atau butuh bantuan teknis? Kirimkan pesan secara langsung.">
+    <meta name="theme-color" content="#151515">
+
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://awangofc.my.id/contact">
+    <meta property="og:title" content="Hubungi Kami - Awang OfficiaL">
+    <meta property="og:description" content="Punya ide luar biasa, tawaran kerja sama, atau butuh bantuan teknis? Kirimkan pesan secara langsung.">
+    <meta property="og:image" content="https://awangofc.my.id/assets/images/profile.jpg">
+    <meta property="og:image:secure_url" content="https://awangofc.my.id/assets/images/profile.jpg">
+    <meta property="og:image:type" content="image/jpeg">
+    <meta property="og:image:width" content="600">
+    <meta property="og:image:height" content="600">
+    <meta property="og:image:alt" content="Hubungi Kami - Awang OfficiaL">
+
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://awangofc.my.id/contact">
+    <meta property="twitter:title" content="Hubungi Kami - Awang OfficiaL">
+    <meta property="twitter:description" content="Punya ide luar biasa, tawaran kerja sama, atau butuh bantuan teknis? Kirimkan pesan secara langsung.">
+    <meta property="twitter:image" content="https://awangofc.my.id/assets/images/profile.jpg">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="contact.css">
+    <script>
+        if(localStorage.getItem('theme') === 'light') {
+            document.documentElement.setAttribute('data-theme', 'light');
+        }
+        (function() {
+            function tryIcon(formats, index) {
+                if (index >= formats.length) return;
+                var img = new Image();
+                img.onload = function() {
+                    var main = document.getElementById('faviconMain');
+                    var apple = document.getElementById('faviconApple');
+                    if (main) { main.type = formats[index].type; main.href = formats[index].href; }
+                    if (apple) { apple.href = formats[index].href; }
+                };
+                img.onerror = function() {
+                    tryIcon(formats, index + 1);
+                };
+                img.src = formats[index].href;
+            }
+            tryIcon([
+                { href: 'assets/images/icon.png', type: 'image/png' },
+                { href: 'assets/images/icon.jpg', type: 'image/jpeg' }
+            ], 0);
+        })();
+    </script>
+</head>
+<body oncontextmenu="return false">
+
+    <div id="bg-base"></div>
+
+    <div class="main-container email-page-container">
+
+        <div class="contact-top-bar-modern">
+            <a href="/" class="back-btn-modern">
+                <i class="fas fa-arrow-left"></i> <span>Kembali</span>
+            </a>
+            <div class="status-pill-modern">
+                <div class="status-dot-modern"></div> Online
+            </div>
+        </div>
+
+        <div class="contact-profile-card">
+            <div class="cp-left">
+                <div class="cp-avatar-box">
+                    <img id="contactProfileImg" src="assets/images/contact-profile.jpg" class="cp-avatar" alt="Profile" loading="lazy">
+                </div>
+                <div class="cp-info">
+                    <h2 id="contactWebName" class="cp-name">Awang OfficiaL</h2>
+                    <p id="contactWebDesc" class="cp-desc">@awang_official</p>
+                </div>
+            </div>
+            <div class="cp-right">
+                <button id="cpToggleBtn" class="cp-menu-btn" onclick="toggleDropdown()">
+                    <i class="fas fa-chevron-down" id="cpToggleIcon"></i>
+                </button>
+            </div>
+        </div>
+
+        <div id="cpDropdown" class="cp-dropdown">
+            <div class="cp-drop-item">
+                <div class="cp-drop-left">
+                    <div class="cp-icon-box wa-color"><i class="fab fa-whatsapp"></i></div>
+                    <span>WhatsApp</span>
+                </div>
+                <div class="cp-drop-right">
+                    <button class="cp-action-btn" onclick="copyContact('556184127506')"><i class="fas fa-copy"></i></button>
+                    <a href="https://wa.me/556184127506" target="_blank" class="cp-action-btn"><i class="fas fa-external-link-alt"></i></a>
+                </div>
+            </div>
+            <div class="cp-drop-item">
+                <div class="cp-drop-left">
+                    <div class="cp-icon-box tg-color"><i class="fab fa-telegram-plane"></i></div>
+                    <span>Telegram</span>
+                </div>
+                <div class="cp-drop-right">
+                    <button class="cp-action-btn" onclick="copyContact('@awangoffc')"><i class="fas fa-copy"></i></button>
+                    <a href="https://t.me/awangoffc" target="_blank" class="cp-action-btn"><i class="fas fa-external-link-alt"></i></a>
+                </div>
+            </div>
+            <div class="cp-drop-item">
+                <div class="cp-drop-left">
+                    <div class="cp-icon-box em-color"><i class="fas fa-envelope"></i></div>
+                    <span>Email</span>
+                </div>
+                <div class="cp-drop-right">
+                    <button class="cp-action-btn" onclick="copyContact('awangcustomerservice@gmail.com')"><i class="fas fa-copy"></i></button>
+                    <a href="mailto:awangcustomerservice@gmail.com" target="_blank" class="cp-action-btn"><i class="fas fa-external-link-alt"></i></a>
+                </div>
+            </div>
+        </div>
+
+        <div class="location-card-glass">
+            <h3><i class="fas fa-map-marker-alt" style="color: var(--c-cyan);"></i> <span id="locationNameConfig">Lokasi Kami</span></h3>
+            <div class="location-map-box">
+                <iframe src="https://maps.google.com/maps?width=425&height=183&hl=en&q=kota%20tegal%20jawa%20tengah&t=&z=13&ie=UTF8&iwloc=B&output=embed" allowfullscreen="" loading="lazy"></iframe>
+            </div>
+        </div>
+
+        <div class="email-card-glass">
+            <h3>Kirim Pesan Langsung</h3>
+
+            <div class="form-group-custom">
+                <label class="form-label-custom">Nama Lengkap / Panggilan</label>
+                <input type="text" id="ticketName" class="form-control-custom" placeholder="Ketik nama Anda di sini...">
+            </div>
+
+            <div class="form-group-custom">
+                <label class="form-label-custom">Alamat Email</label>
+                <input type="email" id="ticketEmail" class="form-control-custom" placeholder="Ketik email aktif Anda...">
+            </div>
+
+            <div class="form-group-custom">
+                <label class="form-label-custom">Detail Pesan</label>
+                <textarea id="ticketMsg" class="form-control-custom form-textarea-custom" placeholder="Jelaskan keperluan Anda secara rinci..."></textarea>
+            </div>
+
+            <button id="submitTicketBtn" class="btn-submit-modern" onclick="submitTicket()">
+                Kirim Pesan Sekarang <i class="fas fa-paper-plane"></i>
+            </button>
+        </div>
+
+        <footer class="simple-footer footer-contact-modern">
+            <div class="footer-line"></div>
+            <p>© 2026 Awang OfficiaL</p>
+            <p class="footer-small">Sistem Tiket Otomatis & Terenkripsi</p>
+        </footer>
+
+        <div id="copyToast" class="copy-toast">
+            <i class="fas fa-check-circle"></i> <span>Disalin</span>
+        </div>
+
+    </div>
+
+    <script src="config.js"></script>
+    <script type="module" src="contact.js"></script>
+</body>
+</html>

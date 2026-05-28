@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Bio Profile - Awang OfficiaL</title>
+
+    <link rel="icon" id="faviconMain" type="image/png" href="assets/images/icon.png">
+    <link rel="apple-touch-icon" id="faviconApple" href="assets/images/icon.png">
+
+    <meta name="title" content="Awang OfficiaL - Bio Profile">
+    <meta name="description" content="Welcome di markas gue! Klik buat liat project, musik, dan chat AI gue.">
+    <meta name="theme-color" content="#151515">
+
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://awangofc.my.id/">
+    <meta property="og:title" content="Awang OfficiaL - Bio Profile">
+    <meta property="og:description" content="Welcome di markas gue! Klik buat liat project, musik, dan chat AI gue.">
+    <meta property="og:image" content="https://awangofc.my.id/assets/images/profile.jpg">
+    <meta property="og:image:secure_url" content="https://awangofc.my.id/assets/images/profile.jpg">
+    <meta property="og:image:type" content="image/jpeg">
+    <meta property="og:image:width" content="600">
+    <meta property="og:image:height" content="600">
+    <meta property="og:image:alt" content="Awang OfficiaL - Bio Profile">
+
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://awangofc.my.id/">
+    <meta property="twitter:title" content="Awang OfficiaL - Bio Profile">
+    <meta property="twitter:description" content="Welcome di markas gue! Klik buat liat project, musik, dan chat AI gue.">
+    <meta property="twitter:image" content="https://awangofc.my.id/assets/images/profile.jpg">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script>
+        if(localStorage.getItem('theme') === 'light') {
+            document.documentElement.setAttribute('data-theme', 'light');
+        }
+        (function() {
+            function tryIcon(formats, index) {
+                if (index >= formats.length) return;
+                var img = new Image();
+                img.onload = function() {
+                    var main = document.getElementById('faviconMain');
+                    var apple = document.getElementById('faviconApple');
+                    if (main) { main.type = formats[index].type; main.href = formats[index].href; }
+                    if (apple) { apple.href = formats[index].href; }
+                };
+                img.onerror = function() {
+                    tryIcon(formats, index + 1);
+                };
+                img.src = formats[index].href;
+            }
+            tryIcon([
+                { href: 'assets/images/icon.png', type: 'image/png' },
+                { href: 'assets/images/icon.jpg', type: 'image/jpeg' }
+            ], 0);
+        })();
+    </script>
+</head>
+<body oncontextmenu="return false">
+
+    <div id="bg-base"></div>
+
+    <div id="splashScreen">
+        <div class="splash-video-wrapper">
+            <video src="assets/images/loading.mp4" autoplay loop muted playsinline class="splash-video"></video>
+        </div>
+    </div>
+
+    <div class="status-bar">
+        <div class="clock-box">
+            <i class="far fa-clock"></i> <span id="clockTime">00:00:00</span>
+        </div>
+        <div class="top-stats">
+            <div class="stat-item">
+                <i class="fas fa-eye"></i> <span id="viewCount">...</span>
+            </div>
+            <div class="stat-item" id="likeBtn" style="cursor:pointer">
+                <i id="likeIcon" class="far fa-heart"></i> <span id="likeCount">...</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="running-text-container">
+        <div class="running-label">INFO</div>
+        <div class="running-content">
+            <div id="marqueeText" class="ticker-text">Loading info...</div>
+        </div>
+    </div>
+
+    <div class="main-container">
+
+        <div class="banner-wrapper">
+            <div id="bannerContainer"></div>
+            <div class="banner-fade-light"></div>
+        </div>
+
+        <header class="profile-section">
+            <div class="profile-card-unique floating-profile">
+                <div class="profile-ring">
+                    <img id="profileImg" src="" alt="Profile" class="profile-img" loading="lazy">
+                </div>
+                <div class="name-container">
+                    <h1 id="webName" class="web-title">Loading...</h1>
+                    <span id="verifiedBadge" class="verified-icon" style="display:none;">
+                        <i class="fas fa-check-circle"></i>
+                    </span>
+                </div>
+                <p id="webDesc" class="web-desc"></p>
+                <div id="profileTags" class="tags-container"></div>
+                <div id="socialLinks" class="social-row"></div>
+            </div>
+        </header>
+
+        <div class="music-wrapper">
+            <div class="music-card-outer">
+                <div class="music-header">Spotify Playlist</div>
+                <div class="spotify-inner-box">
+                    <iframe id="spotifyWidget" src="" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+                </div>
+            </div>
+        </div>
+
+        <div id="linkContainer" class="menu-list"></div>
+
+        <div class="gallery-section">
+            <div class="gallery-box">
+                <div class="gallery-label">GALLERY</div>
+                <div class="slider-outer-clip">
+                    <div class="slide-track" id="sliderTrack"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="hub-container">
+            <div class="hub-nav">
+                <div class="hub-tab active" onclick="switchHub('cbox')" id="tab-cbox">
+                    <i class="fas fa-comments"></i> Cbox
+                </div>
+                <div class="hub-tab" onclick="switchHub('chat')" id="tab-chat">
+                    <i class="fas fa-robot"></i> AI
+                </div>
+            </div>
+
+            <div id="view-cbox" class="hub-view active-view">
+                <div class="cbox-wrapper">
+                    <div class="cbox-inner">
+                        <iframe src="https://www5.cbox.ws/box/?boxid=963271&boxtag=3TXP2r" width="100%" height="450" allowtransparency="yes" allow="autoplay" frameborder="0" marginheight="0" marginwidth="0" scrolling="auto"></iframe>
+                    </div>
+                </div>
+            </div>
+
+            <div id="view-chat" class="hub-view">
+                <div id="chatBox" class="chat-box">
+                    <div class="bot-msg">Halo Bre! Gue aXo Ai. Ada yang bisa gue bantu?</div>
+                </div>
+                <div class="chat-input-area">
+                    <div onclick="clearChat()" class="trash-btn-chat">
+                        <i class="fas fa-trash"></i>
+                    </div>
+                    <input id="chatInput" type="text" class="chat-input" placeholder="Tanya AI..." autocomplete="off">
+                    <button onclick="handleGroqChat()" class="chat-btn">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <footer class="simple-footer">
+            <div class="footer-line"></div>
+            <p>© 2026 <span id="footerName"></span></p>
+            <p class="footer-small">All Rights Reserved</p>
+        </footer>
+
+    </div>
+
+    <div id="themeToggle" class="theme-toggle-btn">
+        <i id="themeIcon" class="fas fa-moon"></i>
+    </div>
+
+    <script src="config.js"></script>
+    <script type="module" src="main.js"></script>
+</body>
+</html>
